@@ -4,4 +4,4 @@
 
 # LibAwsS3.jl
 
-Julia bindings for the [aws-c-mqtt](https://github.com/awslabs/aws-c-mqtt) library.
+Julia bindings for the [aws-c-s3](https://github.com/awslabs/aws-c-s3) library.
