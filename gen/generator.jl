@@ -21,7 +21,7 @@ using LibAwsChecksums
 
 cd(@__DIR__)
 
-const refs_to_remove = []
+const refs_to_remove = ("AWS_S3_API",)
 
 # This is called if the docs generated from the extract_c_comment_style method did not generate any lines.
 # We need to generate at least some docs so that cross-references work with Documenter.jl.
