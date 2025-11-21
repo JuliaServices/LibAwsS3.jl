@@ -1,30 +1,30 @@
-using CEnum
+using CEnum: CEnum, @cenum
 
 """
-    __JL_Ctag_54
+    __JL_Ctag_17
 
 Documentation not found.
 """
-struct __JL_Ctag_54
+struct __JL_Ctag_17
     use_double_uri_encode::UInt32
     should_normalize_uri_path::UInt32
     omit_session_token::UInt32
 end
-function Base.getproperty(x::Ptr{__JL_Ctag_54}, f::Symbol)
+function Base.getproperty(x::Ptr{__JL_Ctag_17}, f::Symbol)
     f === :use_double_uri_encode && return (Ptr{UInt32}(x + 0), 0, 1)
     f === :should_normalize_uri_path && return (Ptr{UInt32}(x + 0), 1, 1)
     f === :omit_session_token && return (Ptr{UInt32}(x + 0), 2, 1)
     return getfield(x, f)
 end
 
-function Base.getproperty(x::__JL_Ctag_54, f::Symbol)
-    r = Ref{__JL_Ctag_54}(x)
-    ptr = Base.unsafe_convert(Ptr{__JL_Ctag_54}, r)
+function Base.getproperty(x::__JL_Ctag_17, f::Symbol)
+    r = Ref{__JL_Ctag_17}(x)
+    ptr = Base.unsafe_convert(Ptr{__JL_Ctag_17}, r)
     fptr = getproperty(ptr, f)
     GC.@preserve r unsafe_load(fptr)
 end
 
-function Base.setproperty!(x::Ptr{__JL_Ctag_54}, f::Symbol, v)
+function Base.setproperty!(x::Ptr{__JL_Ctag_17}, f::Symbol, v)
     unsafe_store!(getproperty(x, f), v)
 end
 
@@ -66,6 +66,10 @@ Documentation not found.
     AWS_ERROR_S3EXPRESS_CREATE_SESSION_FAILED = 14364
     AWS_ERROR_S3_INTERNAL_PART_SIZE_MISMATCH_RETRYING_WITH_RANGE = 14365
     AWS_ERROR_S3_REQUEST_HAS_COMPLETED = 14366
+    AWS_ERROR_S3_RECV_FILE_ALREADY_EXISTS = 14367
+    AWS_ERROR_S3_RECV_FILE_NOT_FOUND = 14368
+    AWS_ERROR_S3_REQUEST_TIMEOUT = 14369
+    AWS_ERROR_S3_BUFFER_ALLOCATION_FAILED = 14370
     AWS_ERROR_S3_END_RANGE = 15359
 end
 
@@ -85,18 +89,6 @@ Documentation not found.
 end
 
 """
-    aws_s3_cpu_group_info
-
-Documentation not found.
-"""
-struct aws_s3_cpu_group_info
-    cpu_group::UInt16
-    nic_name_array::Ptr{aws_byte_cursor}
-    nic_name_array_length::Csize_t
-    cpus_in_group::Csize_t
-end
-
-"""
     aws_s3_platform_info
 
 Documentation not found.
@@ -104,8 +96,6 @@ Documentation not found.
 struct aws_s3_platform_info
     instance_type::aws_byte_cursor
     max_throughput_gbps::Cdouble
-    cpu_group_info_array::Ptr{aws_s3_cpu_group_info}
-    cpu_group_info_array_length::Csize_t
     has_recommended_configuration::Bool
 end
 
@@ -177,6 +167,229 @@ function aws_s3_get_platforms_with_recommended_config()
 end
 
 """
+aws\\_future<aws\\_s3\\_buffer\\_ticket*> Buffer ticket future used for reservations.
+"""
+mutable struct aws_future_s3_buffer_ticket end
+
+"""
+    aws_future_s3_buffer_ticket_new(alloc)
+
+aws\\_future<aws\\_s3\\_buffer\\_ticket*> Buffer ticket future used for reservations.
+
+### Prototype
+```c
+AWS_FUTURE_T_POINTER_WITH_RELEASE_DECLARATION(aws_future_s3_buffer_ticket, struct aws_s3_buffer_ticket, AWS_S3_API);
+```
+"""
+function aws_future_s3_buffer_ticket_new(alloc)
+    ccall((:aws_future_s3_buffer_ticket_new, libaws_c_s3), Ptr{aws_future_s3_buffer_ticket}, (Ptr{aws_allocator},), alloc)
+end
+
+"""
+    aws_s3_buffer_ticket_vtable
+
+Documentation not found.
+"""
+struct aws_s3_buffer_ticket_vtable
+    claim::Ptr{Cvoid}
+    acquire::Ptr{Cvoid}
+    release::Ptr{Cvoid}
+end
+
+"""
+    aws_s3_buffer_ticket
+
+Polymorphic ticket.
+"""
+struct aws_s3_buffer_ticket
+    vtable::Ptr{aws_s3_buffer_ticket_vtable}
+    ref_count::aws_ref_count
+    impl::Ptr{Cvoid}
+end
+
+"""
+    aws_future_s3_buffer_ticket_set_result_by_move(future, pointer_address)
+
+aws\\_future<aws\\_s3\\_buffer\\_ticket*> Buffer ticket future used for reservations.
+
+### Prototype
+```c
+AWS_FUTURE_T_POINTER_WITH_RELEASE_DECLARATION(aws_future_s3_buffer_ticket, struct aws_s3_buffer_ticket, AWS_S3_API);
+```
+"""
+function aws_future_s3_buffer_ticket_set_result_by_move(future, pointer_address)
+    ccall((:aws_future_s3_buffer_ticket_set_result_by_move, libaws_c_s3), Cvoid, (Ptr{aws_future_s3_buffer_ticket}, Ptr{Ptr{aws_s3_buffer_ticket}}), future, pointer_address)
+end
+
+"""
+    aws_future_s3_buffer_ticket_get_result_by_move(future)
+
+aws\\_future<aws\\_s3\\_buffer\\_ticket*> Buffer ticket future used for reservations.
+
+### Prototype
+```c
+AWS_FUTURE_T_POINTER_WITH_RELEASE_DECLARATION(aws_future_s3_buffer_ticket, struct aws_s3_buffer_ticket, AWS_S3_API);
+```
+"""
+function aws_future_s3_buffer_ticket_get_result_by_move(future)
+    ccall((:aws_future_s3_buffer_ticket_get_result_by_move, libaws_c_s3), Ptr{aws_s3_buffer_ticket}, (Ptr{aws_future_s3_buffer_ticket},), future)
+end
+
+"""
+    aws_future_s3_buffer_ticket_peek_result(future)
+
+aws\\_future<aws\\_s3\\_buffer\\_ticket*> Buffer ticket future used for reservations.
+
+### Prototype
+```c
+AWS_FUTURE_T_POINTER_WITH_RELEASE_DECLARATION(aws_future_s3_buffer_ticket, struct aws_s3_buffer_ticket, AWS_S3_API);
+```
+"""
+function aws_future_s3_buffer_ticket_peek_result(future)
+    ccall((:aws_future_s3_buffer_ticket_peek_result, libaws_c_s3), Ptr{aws_s3_buffer_ticket}, (Ptr{aws_future_s3_buffer_ticket},), future)
+end
+
+"""
+    aws_future_s3_buffer_ticket_acquire(future)
+
+aws\\_future<aws\\_s3\\_buffer\\_ticket*> Buffer ticket future used for reservations.
+
+### Prototype
+```c
+AWS_FUTURE_T_POINTER_WITH_RELEASE_DECLARATION(aws_future_s3_buffer_ticket, struct aws_s3_buffer_ticket, AWS_S3_API);
+```
+"""
+function aws_future_s3_buffer_ticket_acquire(future)
+    ccall((:aws_future_s3_buffer_ticket_acquire, libaws_c_s3), Ptr{aws_future_s3_buffer_ticket}, (Ptr{aws_future_s3_buffer_ticket},), future)
+end
+
+"""
+    aws_future_s3_buffer_ticket_release(future)
+
+aws\\_future<aws\\_s3\\_buffer\\_ticket*> Buffer ticket future used for reservations.
+
+### Prototype
+```c
+AWS_FUTURE_T_POINTER_WITH_RELEASE_DECLARATION(aws_future_s3_buffer_ticket, struct aws_s3_buffer_ticket, AWS_S3_API);
+```
+"""
+function aws_future_s3_buffer_ticket_release(future)
+    ccall((:aws_future_s3_buffer_ticket_release, libaws_c_s3), Ptr{aws_future_s3_buffer_ticket}, (Ptr{aws_future_s3_buffer_ticket},), future)
+end
+
+"""
+    aws_future_s3_buffer_ticket_set_error(future, error_code)
+
+aws\\_future<aws\\_s3\\_buffer\\_ticket*> Buffer ticket future used for reservations.
+
+### Prototype
+```c
+AWS_FUTURE_T_POINTER_WITH_RELEASE_DECLARATION(aws_future_s3_buffer_ticket, struct aws_s3_buffer_ticket, AWS_S3_API);
+```
+"""
+function aws_future_s3_buffer_ticket_set_error(future, error_code)
+    ccall((:aws_future_s3_buffer_ticket_set_error, libaws_c_s3), Cvoid, (Ptr{aws_future_s3_buffer_ticket}, Cint), future, error_code)
+end
+
+"""
+    aws_future_s3_buffer_ticket_is_done(future)
+
+aws\\_future<aws\\_s3\\_buffer\\_ticket*> Buffer ticket future used for reservations.
+
+### Prototype
+```c
+AWS_FUTURE_T_POINTER_WITH_RELEASE_DECLARATION(aws_future_s3_buffer_ticket, struct aws_s3_buffer_ticket, AWS_S3_API);
+```
+"""
+function aws_future_s3_buffer_ticket_is_done(future)
+    ccall((:aws_future_s3_buffer_ticket_is_done, libaws_c_s3), Bool, (Ptr{aws_future_s3_buffer_ticket},), future)
+end
+
+"""
+    aws_future_s3_buffer_ticket_get_error(future)
+
+aws\\_future<aws\\_s3\\_buffer\\_ticket*> Buffer ticket future used for reservations.
+
+### Prototype
+```c
+AWS_FUTURE_T_POINTER_WITH_RELEASE_DECLARATION(aws_future_s3_buffer_ticket, struct aws_s3_buffer_ticket, AWS_S3_API);
+```
+"""
+function aws_future_s3_buffer_ticket_get_error(future)
+    ccall((:aws_future_s3_buffer_ticket_get_error, libaws_c_s3), Cint, (Ptr{aws_future_s3_buffer_ticket},), future)
+end
+
+"""
+    aws_future_s3_buffer_ticket_register_callback(future, on_done, user_data)
+
+aws\\_future<aws\\_s3\\_buffer\\_ticket*> Buffer ticket future used for reservations.
+
+### Prototype
+```c
+AWS_FUTURE_T_POINTER_WITH_RELEASE_DECLARATION(aws_future_s3_buffer_ticket, struct aws_s3_buffer_ticket, AWS_S3_API);
+```
+"""
+function aws_future_s3_buffer_ticket_register_callback(future, on_done, user_data)
+    ccall((:aws_future_s3_buffer_ticket_register_callback, libaws_c_s3), Cvoid, (Ptr{aws_future_s3_buffer_ticket}, Ptr{aws_future_callback_fn}, Ptr{Cvoid}), future, on_done, user_data)
+end
+
+"""
+    aws_future_s3_buffer_ticket_register_callback_if_not_done(future, on_done, user_data)
+
+aws\\_future<aws\\_s3\\_buffer\\_ticket*> Buffer ticket future used for reservations.
+
+### Prototype
+```c
+AWS_FUTURE_T_POINTER_WITH_RELEASE_DECLARATION(aws_future_s3_buffer_ticket, struct aws_s3_buffer_ticket, AWS_S3_API);
+```
+"""
+function aws_future_s3_buffer_ticket_register_callback_if_not_done(future, on_done, user_data)
+    ccall((:aws_future_s3_buffer_ticket_register_callback_if_not_done, libaws_c_s3), Bool, (Ptr{aws_future_s3_buffer_ticket}, Ptr{aws_future_callback_fn}, Ptr{Cvoid}), future, on_done, user_data)
+end
+
+"""
+    aws_future_s3_buffer_ticket_register_event_loop_callback(future, event_loop, on_done, user_data)
+
+aws\\_future<aws\\_s3\\_buffer\\_ticket*> Buffer ticket future used for reservations.
+
+### Prototype
+```c
+AWS_FUTURE_T_POINTER_WITH_RELEASE_DECLARATION(aws_future_s3_buffer_ticket, struct aws_s3_buffer_ticket, AWS_S3_API);
+```
+"""
+function aws_future_s3_buffer_ticket_register_event_loop_callback(future, event_loop, on_done, user_data)
+    ccall((:aws_future_s3_buffer_ticket_register_event_loop_callback, libaws_c_s3), Cvoid, (Ptr{aws_future_s3_buffer_ticket}, Ptr{Cvoid}, Ptr{aws_future_callback_fn}, Ptr{Cvoid}), future, event_loop, on_done, user_data)
+end
+
+"""
+    aws_future_s3_buffer_ticket_register_channel_callback(future, channel, on_done, user_data)
+
+aws\\_future<aws\\_s3\\_buffer\\_ticket*> Buffer ticket future used for reservations.
+
+### Prototype
+```c
+AWS_FUTURE_T_POINTER_WITH_RELEASE_DECLARATION(aws_future_s3_buffer_ticket, struct aws_s3_buffer_ticket, AWS_S3_API);
+```
+"""
+function aws_future_s3_buffer_ticket_register_channel_callback(future, channel, on_done, user_data)
+    ccall((:aws_future_s3_buffer_ticket_register_channel_callback, libaws_c_s3), Cvoid, (Ptr{aws_future_s3_buffer_ticket}, Ptr{Cvoid}, Ptr{aws_future_callback_fn}, Ptr{Cvoid}), future, channel, on_done, user_data)
+end
+
+"""
+    aws_future_s3_buffer_ticket_wait(future, timeout_ns)
+
+aws\\_future<aws\\_s3\\_buffer\\_ticket*> Buffer ticket future used for reservations.
+
+### Prototype
+```c
+AWS_FUTURE_T_POINTER_WITH_RELEASE_DECLARATION(aws_future_s3_buffer_ticket, struct aws_s3_buffer_ticket, AWS_S3_API);
+```
+"""
+function aws_future_s3_buffer_ticket_wait(future, timeout_ns)
+    ccall((:aws_future_s3_buffer_ticket_wait, libaws_c_s3), Bool, (Ptr{aws_future_s3_buffer_ticket}, UInt64), future, timeout_ns)
+end
+
+"""
 Documentation not found.
 """
 mutable struct aws_s3_client end
@@ -184,12 +397,214 @@ mutable struct aws_s3_client end
 """
 Documentation not found.
 """
-mutable struct aws_s3_request end
+mutable struct aws_s3_meta_request end
+
+"""
+    aws_s3_buffer_pool_reserve_meta
+
+Meta information about ticket reservation request.
+"""
+struct aws_s3_buffer_pool_reserve_meta
+    client::Ptr{aws_s3_client}
+    meta_request::Ptr{aws_s3_meta_request}
+    size::Csize_t
+    can_block::Bool
+end
+
+"""
+    aws_s3_buffer_ticket_claim(ticket)
+
+Documentation not found.
+### Prototype
+```c
+struct aws_byte_buf aws_s3_buffer_ticket_claim(struct aws_s3_buffer_ticket *ticket);
+```
+"""
+function aws_s3_buffer_ticket_claim(ticket)
+    ccall((:aws_s3_buffer_ticket_claim, libaws_c_s3), aws_byte_buf, (Ptr{aws_s3_buffer_ticket},), ticket)
+end
+
+"""
+    aws_s3_buffer_ticket_acquire(ticket)
+
+Documentation not found.
+### Prototype
+```c
+struct aws_s3_buffer_ticket *aws_s3_buffer_ticket_acquire(struct aws_s3_buffer_ticket *ticket);
+```
+"""
+function aws_s3_buffer_ticket_acquire(ticket)
+    ccall((:aws_s3_buffer_ticket_acquire, libaws_c_s3), Ptr{aws_s3_buffer_ticket}, (Ptr{aws_s3_buffer_ticket},), ticket)
+end
+
+"""
+    aws_s3_buffer_ticket_release(ticket)
+
+Documentation not found.
+### Prototype
+```c
+struct aws_s3_buffer_ticket *aws_s3_buffer_ticket_release(struct aws_s3_buffer_ticket *ticket);
+```
+"""
+function aws_s3_buffer_ticket_release(ticket)
+    ccall((:aws_s3_buffer_ticket_release, libaws_c_s3), Ptr{aws_s3_buffer_ticket}, (Ptr{aws_s3_buffer_ticket},), ticket)
+end
+
+"""
+    aws_s3_buffer_pool_vtable
+
+Documentation not found.
+"""
+struct aws_s3_buffer_pool_vtable
+    reserve::Ptr{Cvoid}
+    trim::Ptr{Cvoid}
+    add_special_size::Ptr{Cvoid}
+    release_special_size::Ptr{Cvoid}
+    derive_aligned_buffer_size::Ptr{Cvoid}
+    acquire::Ptr{Cvoid}
+    release::Ptr{Cvoid}
+end
+
+"""
+    aws_s3_buffer_pool
+
+Polymorphic buffer pool.
+"""
+struct aws_s3_buffer_pool
+    vtable::Ptr{aws_s3_buffer_pool_vtable}
+    ref_count::aws_ref_count
+    impl::Ptr{Cvoid}
+end
+
+"""
+    aws_s3_buffer_pool_reserve(buffer_pool, meta)
+
+Documentation not found.
+### Prototype
+```c
+struct aws_future_s3_buffer_ticket *aws_s3_buffer_pool_reserve( struct aws_s3_buffer_pool *buffer_pool, struct aws_s3_buffer_pool_reserve_meta meta);
+```
+"""
+function aws_s3_buffer_pool_reserve(buffer_pool, meta)
+    ccall((:aws_s3_buffer_pool_reserve, libaws_c_s3), Ptr{aws_future_s3_buffer_ticket}, (Ptr{aws_s3_buffer_pool}, aws_s3_buffer_pool_reserve_meta), buffer_pool, meta)
+end
+
+"""
+    aws_s3_buffer_pool_trim(buffer_pool)
+
+Documentation not found.
+### Prototype
+```c
+void aws_s3_buffer_pool_trim(struct aws_s3_buffer_pool *buffer_pool);
+```
+"""
+function aws_s3_buffer_pool_trim(buffer_pool)
+    ccall((:aws_s3_buffer_pool_trim, libaws_c_s3), Cvoid, (Ptr{aws_s3_buffer_pool},), buffer_pool)
+end
+
+"""
+    aws_s3_buffer_pool_acquire(buffer_pool)
+
+Documentation not found.
+### Prototype
+```c
+struct aws_s3_buffer_pool *aws_s3_buffer_pool_acquire(struct aws_s3_buffer_pool *buffer_pool);
+```
+"""
+function aws_s3_buffer_pool_acquire(buffer_pool)
+    ccall((:aws_s3_buffer_pool_acquire, libaws_c_s3), Ptr{aws_s3_buffer_pool}, (Ptr{aws_s3_buffer_pool},), buffer_pool)
+end
+
+"""
+    aws_s3_buffer_pool_release(buffer_pool)
+
+Documentation not found.
+### Prototype
+```c
+struct aws_s3_buffer_pool *aws_s3_buffer_pool_release(struct aws_s3_buffer_pool *buffer_pool);
+```
+"""
+function aws_s3_buffer_pool_release(buffer_pool)
+    ccall((:aws_s3_buffer_pool_release, libaws_c_s3), Ptr{aws_s3_buffer_pool}, (Ptr{aws_s3_buffer_pool},), buffer_pool)
+end
+
+"""
+    aws_s3_buffer_pool_config
+
+Buffer pool configuration options.
+"""
+struct aws_s3_buffer_pool_config
+    client::Ptr{aws_s3_client}
+    part_size::Csize_t
+    max_part_size::Csize_t
+    memory_limit::Csize_t
+end
+
+# typedef struct aws_s3_buffer_pool * ( aws_s3_buffer_pool_factory_fn ) ( struct aws_allocator * allocator , struct aws_s3_buffer_pool_config config , void * user_data )
+"""
+Factory to construct the pool for the given config. Passes along buffer related info configured on the client, which factory may ignore when considering how to construct pool. This implementation should fail if pool cannot be constructed for some reason (ex. if config params cannot be met), by logging failure reason, returning null and raising aws\\_error.
+"""
+const aws_s3_buffer_pool_factory_fn = Cvoid
+
+"""
+    aws_s3_buffer_pool_add_special_size(buffer_pool, buffer_size)
+
+Optimize the buffer pool for allocations of a specific size. Creates a separate list of blocks dedicated to this size for better memory efficiency. Allocations of exactly this size will use these special blocks instead of the regular primary/secondary storage.
+
+# Arguments
+* `buffer_pool`: The buffer pool to optimize
+* `buffer_size`: The size to optimize for (must be > 0)
+# Returns
+AWS\\_OP\\_SUCCESS on success, AWS\\_OP\\_ERR on failure
+### Prototype
+```c
+int aws_s3_buffer_pool_add_special_size(struct aws_s3_buffer_pool *buffer_pool, size_t buffer_size);
+```
+"""
+function aws_s3_buffer_pool_add_special_size(buffer_pool, buffer_size)
+    ccall((:aws_s3_buffer_pool_add_special_size, libaws_c_s3), Cint, (Ptr{aws_s3_buffer_pool}, Csize_t), buffer_pool, buffer_size)
+end
+
+"""
+    aws_s3_buffer_pool_release_special_size(buffer_pool, buffer_size)
+
+Release the special-sized blocks from the buffer pool. Should be called when done with the special-sized allocations.
+
+# Arguments
+* `buffer_pool`: The buffer pool
+* `buffer_size`: The special size to release blocks for
+### Prototype
+```c
+void aws_s3_buffer_pool_release_special_size(struct aws_s3_buffer_pool *buffer_pool, size_t buffer_size);
+```
+"""
+function aws_s3_buffer_pool_release_special_size(buffer_pool, buffer_size)
+    ccall((:aws_s3_buffer_pool_release_special_size, libaws_c_s3), Cvoid, (Ptr{aws_s3_buffer_pool}, Csize_t), buffer_pool, buffer_size)
+end
+
+"""
+    aws_s3_buffer_pool_derive_aligned_buffer_size(buffer_pool, size)
+
+Align a range size to the buffer pool's allocation strategy. This function determines the optimal aligned size based on the buffer pool's configuration. For sizes within the primary allocation range, it aligns to chunk boundaries. For larger sizes that go to secondary storage, it returns the size as-is.
+
+# Arguments
+* `buffer_pool`: The buffer pool to use for alignment (can be NULL, in which case size is returned unchanged)
+* `size`: The size to align
+# Returns
+The aligned size that's optimal for the buffer pool's allocation strategy
+### Prototype
+```c
+uint64_t aws_s3_buffer_pool_derive_aligned_buffer_size(struct aws_s3_buffer_pool *buffer_pool, uint64_t size);
+```
+"""
+function aws_s3_buffer_pool_derive_aligned_buffer_size(buffer_pool, size)
+    ccall((:aws_s3_buffer_pool_derive_aligned_buffer_size, libaws_c_s3), UInt64, (Ptr{aws_s3_buffer_pool}, UInt64), buffer_pool, size)
+end
 
 """
 Documentation not found.
 """
-mutable struct aws_s3_meta_request end
+mutable struct aws_s3_request end
 
 """
 Documentation not found.
@@ -232,7 +647,8 @@ For example, AWS\\_S3\\_META\\_REQUEST\\_TYPE\\_PUT\\_OBJECT for a large file wi
     AWS_S3_REQUEST_TYPE_UPLOAD_PART_COPY = 8
     AWS_S3_REQUEST_TYPE_COPY_OBJECT = 9
     AWS_S3_REQUEST_TYPE_PUT_OBJECT = 10
-    AWS_S3_REQUEST_TYPE_MAX = 11
+    AWS_S3_REQUEST_TYPE_CREATE_SESSION = 11
+    AWS_S3_REQUEST_TYPE_MAX = 12
     AWS_S3_REQUEST_TYPE_DEFAULT = 0
 end
 
@@ -268,6 +684,22 @@ Invoked when the entire meta request execution is complete.
 const aws_s3_meta_request_finish_fn = Cvoid
 
 """
+    aws_s3_meta_request_receive_body_extra_info
+
+Documentation not found.
+"""
+struct aws_s3_meta_request_receive_body_extra_info
+    range_start::UInt64
+    ticket::Ptr{aws_s3_buffer_ticket}
+end
+
+# typedef int ( aws_s3_meta_request_receive_body_callback_ex_fn ) ( /* The meta request that the callback is being issued for. */ struct aws_s3_meta_request * meta_request , /* The body data for this chunk of the object. */ const struct aws_byte_cursor * body , /* Extra information associated with the delivered body */ const struct aws_s3_meta_request_receive_body_extra_info info , /* User data specified by aws_s3_meta_request_options.*/ void * user_data )
+"""
+Documentation not found.
+"""
+const aws_s3_meta_request_receive_body_callback_ex_fn = Cvoid
+
+"""
     aws_s3_meta_request_progress
 
 Information sent in the meta\\_request progress callback.
@@ -301,6 +733,18 @@ Documentation not found.
 """
 const aws_s3_client_shutdown_complete_callback_fn = Cvoid
 
+# typedef struct aws_string * ( aws_s3_meta_request_full_object_checksum_fn ) ( struct aws_s3_meta_request * meta_request , void * user_data )
+"""
+Optional callback, for you to provide the full object checksum after the object was read. Client will NOT check the checksum provided before sending it to the server.
+
+# Arguments
+* `meta_request`: pointer to the [`aws_s3_meta_request`](@ref) of the upload.
+* `user_data`: pointer to the user\\_data set.
+# Returns
+A new string with the full object checksum, as it is sent in a PutObject request (base64-encoded): https://docs.aws.amazon.com/AmazonS3/latest/API/API\\_PutObject.html#API\\_PutObject\\_RequestSyntax If an error occurs, call aws\\_raise\\_error(E) with a proper error code and return NULL.
+"""
+const aws_s3_meta_request_full_object_checksum_fn = Cvoid
+
 """
     aws_s3_meta_request_tls_mode
 
@@ -333,7 +777,8 @@ Documentation not found.
     AWS_SCA_CRC32 = 2
     AWS_SCA_SHA1 = 3
     AWS_SCA_SHA256 = 4
-    AWS_SCA_END = 4
+    AWS_SCA_CRC64NVME = 5
+    AWS_SCA_END = 5
 end
 
 """
@@ -345,6 +790,29 @@ Documentation not found.
     AWS_SCL_NONE = 0
     AWS_SCL_HEADER = 1
     AWS_SCL_TRAILER = 2
+end
+
+"""
+    aws_s3_recv_file_options
+
+Documentation not found.
+"""
+@cenum aws_s3_recv_file_options::UInt32 begin
+    AWS_S3_RECV_FILE_CREATE_OR_REPLACE = 0
+    AWS_S3_RECV_FILE_CREATE_NEW = 1
+    AWS_S3_RECV_FILE_CREATE_OR_APPEND = 2
+    AWS_S3_RECV_FILE_WRITE_TO_POSITION = 3
+end
+
+"""
+    aws_s3_file_io_options
+
+WARNING: experimental/unstable: Controls how client performance file I/O operations. Only applies to the file based workload.
+"""
+struct aws_s3_file_io_options
+    should_stream::Bool
+    disk_throughput_gbps::Cdouble
+    direct_io::Bool
 end
 
 """
@@ -427,6 +895,7 @@ struct aws_s3_client_config
     client_bootstrap::Ptr{aws_client_bootstrap}
     tls_mode::aws_s3_meta_request_tls_mode
     tls_connection_options::Ptr{aws_tls_connection_options}
+    fio_opts::Ptr{aws_s3_file_io_options}
     signing_config::Ptr{aws_signing_config_aws}
     part_size::UInt64
     max_part_size::UInt64
@@ -447,6 +916,10 @@ struct aws_s3_client_config
     enable_s3express::Bool
     s3express_provider_override_factory::Ptr{aws_s3express_provider_factory_fn}
     factory_user_data::Ptr{Cvoid}
+    network_interface_names_array::Ptr{aws_byte_cursor}
+    num_network_interface_names::Csize_t
+    buffer_pool_factory_fn::Ptr{aws_s3_buffer_pool_factory_fn}
+    buffer_pool_user_data::Ptr{Cvoid}
 end
 
 """
@@ -457,6 +930,8 @@ Documentation not found.
 struct aws_s3_checksum_config
     location::aws_s3_checksum_location
     checksum_algorithm::aws_s3_checksum_algorithm
+    full_object_checksum_callback::Ptr{aws_s3_meta_request_full_object_checksum_fn}
+    user_data::Ptr{Cvoid}
     validate_response_checksum::Bool
     validate_checksum_algorithms::Ptr{aws_array_list}
 end
@@ -478,15 +953,22 @@ struct aws_s3_meta_request_options
     operation_name::aws_byte_cursor
     signing_config::Ptr{aws_signing_config_aws}
     message::Ptr{aws_http_message}
+    recv_filepath::aws_byte_cursor
+    recv_file_option::aws_s3_recv_file_options
+    recv_file_position::UInt64
+    recv_file_delete_on_failure::Bool
     send_filepath::aws_byte_cursor
+    fio_opts::Ptr{aws_s3_file_io_options}
     send_async_stream::Ptr{aws_async_input_stream}
     send_using_async_writes::Bool
     checksum_config::Ptr{aws_s3_checksum_config}
     part_size::UInt64
+    force_dynamic_part_size::Bool
     multipart_upload_threshold::UInt64
     user_data::Ptr{Cvoid}
     headers_callback::Ptr{aws_s3_meta_request_headers_callback_fn}
     body_callback::Ptr{aws_s3_meta_request_receive_body_callback_fn}
+    body_callback_ex::Ptr{aws_s3_meta_request_receive_body_callback_ex_fn}
     finish_callback::Ptr{aws_s3_meta_request_finish_fn}
     shutdown_callback::Ptr{aws_s3_meta_request_shutdown_fn}
     progress_callback::Ptr{aws_s3_meta_request_progress_fn}
@@ -495,6 +977,8 @@ struct aws_s3_meta_request_options
     endpoint::Ptr{aws_uri}
     resume_token::Ptr{aws_s3_meta_request_resume_token}
     object_size_hint::Ptr{UInt64}
+    copy_source_uri::aws_byte_cursor
+    max_active_connections_override::UInt32
 end
 
 """
@@ -567,6 +1051,49 @@ function aws_s3_client_make_meta_request(client, options)
 end
 
 """
+    aws_s3_meta_request_poll_write_result
+
+The result of an `[`aws_s3_meta_request_poll_write`](@ref)()` call. Think of this like Rust's `Poll<Result<size\\_t, int>>`, or C++'s `optional<expected<size\\_t, int>>`.
+"""
+struct aws_s3_meta_request_poll_write_result
+    is_pending::Bool
+    error_code::Cint
+    bytes_processed::Csize_t
+end
+
+"""
+    aws_s3_meta_request_poll_write(meta_request, data, eof, waker, user_data)
+
+Attempt to write data.
+
+You must set `[`aws_s3_meta_request_options`](@ref).send\\_using\\_async\\_writes` to use this function.
+
+This is a non-blocking poll-style async function, similar to Rust's: https://docs.rs/futures/latest/futures/io/trait.AsyncWrite.html#tymethod.poll\\_write If you prefer completion-style async functions, and your data can outlive the callstack, use [`aws_s3_meta_request_write`](@ref)() instead.
+
+Check the returned `result` struct to see what happened: 1) If `result.is\\_pending == true` then no work was done. The waker callback will be invoked when you can call poll\\_write() again. Do not call poll\\_write() again before the waker is invoked.
+
+2) Else if `result.error\\_code != 0` then poll\\_write() did not succeed and you should not call it again. The meta request is guaranteed to finish soon (you don't need to worry about canceling the meta request yourself after a failed write). A common error code is AWS\\_ERROR\\_S3\\_REQUEST\\_HAS\\_COMPLETED, indicating the meta request completed for reasons unrelated to the poll\\_write() call (e.g. CreateMultipartUpload received a 403 Forbidden response). AWS\\_ERROR\\_INVALID\\_STATE usually indicates that you're calling poll\\_write() incorrectly (e.g. not waiting for waker callback from previous poll\\_write() call).
+
+3) Else `result.bytes\\_processed` tells you how much data was processed. `bytes_processed` may be less than the `data.len` you passed in. Continue calling poll\\_write() with the remaining data until everything is processed. `result.bytes\\_processed` won't be 0 unless you passed in `data.len` of 0.
+
+WARNING: This feature is experimental.
+
+# Arguments
+* `meta_request`: Meta request
+* `data`: The data to send. The data can be any size. `result.bytes\\_processed` indicates how many bytes were processed by this call.
+* `eof`: Pass true to signal EOF (end of file). If poll\\_write() doesn't process all your data (`result.is\\_pending` or `result.byte\\_processed < data.len`) then EOF was ignored, and you need to pass it again to subsequent poll\\_write() calls.
+* `waker`: Waker callback. If `result.is\\_pending == true`, then the waker will be called exactly once when it's a good time to call poll\\_write() again. If `result.is\\_pending == false`, the waker will never be called.
+* `user_data`: Pointer to be passed to the waker callback.
+### Prototype
+```c
+struct aws_s3_meta_request_poll_write_result aws_s3_meta_request_poll_write( struct aws_s3_meta_request *meta_request, struct aws_byte_cursor data, bool eof, aws_simple_completion_callback *waker, void *user_data);
+```
+"""
+function aws_s3_meta_request_poll_write(meta_request, data, eof, waker, user_data)
+    ccall((:aws_s3_meta_request_poll_write, libaws_c_s3), aws_s3_meta_request_poll_write_result, (Ptr{aws_s3_meta_request}, aws_byte_cursor, Bool, Ptr{aws_simple_completion_callback}, Ptr{Cvoid}), meta_request, data, eof, waker, user_data)
+end
+
+"""
     aws_s3_meta_request_write(meta_request, data, eof)
 
 Write the next chunk of data.
@@ -577,7 +1104,7 @@ This function is asynchronous, and returns a future (see <aws/io/future.h>). You
 
 If the future completes with an error code, then write() did not succeed and you should not call it again. If the future contains any error code, the meta request is guaranteed to finish soon (you don't need to worry about canceling the meta request yourself after a failed write). A common error code is AWS\\_ERROR\\_S3\\_REQUEST\\_HAS\\_COMPLETED, indicating the meta request completed for reasons unrelated to the write() call (e.g. CreateMultipartUpload received a 403 Forbidden response). AWS\\_ERROR\\_INVALID\\_STATE usually indicates that you're calling write() incorrectly (e.g. not waiting for previous write to complete).
 
-You MUST keep the data in memory until the future completes. If you need to free the memory early, call [`aws_s3_meta_request_cancel`](@ref)(). cancel() will synchronously complete the future from any pending write with error code AWS\\_ERROR\\_S3\\_REQUEST\\_HAS\\_COMPLETED.
+You MUST keep the data in memory until the future completes. If you cannot do this, use [`aws_s3_meta_request_poll_write`](@ref)() instead.
 
 You can wait any length of time between calls to write(). If there's not enough data to upload a part, the data will be copied to a buffer and the future will immediately complete.
 
@@ -595,7 +1122,7 @@ struct aws_future_void *aws_s3_meta_request_write( struct aws_s3_meta_request *m
 ```
 """
 function aws_s3_meta_request_write(meta_request, data, eof)
-    ccall((:aws_s3_meta_request_write, libaws_c_s3), Ptr{aws_future_void}, (Ptr{aws_s3_meta_request}, aws_byte_cursor, Bool), meta_request, data, eof)
+    ccall((:aws_s3_meta_request_write, libaws_c_s3), Ptr{Cvoid}, (Ptr{aws_s3_meta_request}, aws_byte_cursor, Bool), meta_request, data, eof)
 end
 
 """
@@ -868,6 +1395,20 @@ function aws_s3_request_metrics_get_request_id(metrics, out_request_id)
 end
 
 """
+    aws_s3_request_metrics_get_extended_request_id(metrics, out_extended_request_id)
+
+Get the extended request ID from [`aws_s3_request_metrics`](@ref). If unavailable, AWS\\_ERROR\\_S3\\_METRIC\\_DATA\\_NOT\\_AVAILABLE will be raised. If available, out\\_extended\\_request\\_id will be set to a string. Be warned this string's lifetime is tied to the metrics object.
+
+### Prototype
+```c
+int aws_s3_request_metrics_get_extended_request_id( const struct aws_s3_request_metrics *metrics, const struct aws_string **out_extended_request_id);
+```
+"""
+function aws_s3_request_metrics_get_extended_request_id(metrics, out_extended_request_id)
+    ccall((:aws_s3_request_metrics_get_extended_request_id, libaws_c_s3), Cint, (Ptr{aws_s3_request_metrics}, Ptr{Ptr{aws_string}}), metrics, out_extended_request_id)
+end
+
+"""
     aws_s3_request_metrics_get_start_timestamp_ns(metrics, out_start_time)
 
 Documentation not found.
@@ -972,6 +1513,123 @@ function aws_s3_request_metrics_get_receive_end_timestamp_ns(metrics, out_receiv
 end
 
 """
+    aws_s3_request_metrics_get_sign_start_timestamp_ns(metrics, out_signing_start_time)
+
+Documentation not found.
+### Prototype
+```c
+int aws_s3_request_metrics_get_sign_start_timestamp_ns( const struct aws_s3_request_metrics *metrics, uint64_t *out_signing_start_time);
+```
+"""
+function aws_s3_request_metrics_get_sign_start_timestamp_ns(metrics, out_signing_start_time)
+    ccall((:aws_s3_request_metrics_get_sign_start_timestamp_ns, libaws_c_s3), Cint, (Ptr{aws_s3_request_metrics}, Ptr{UInt64}), metrics, out_signing_start_time)
+end
+
+"""
+    aws_s3_request_metrics_get_sign_end_timestamp_ns(metrics, out_signing_end_time)
+
+Documentation not found.
+### Prototype
+```c
+int aws_s3_request_metrics_get_sign_end_timestamp_ns( const struct aws_s3_request_metrics *metrics, uint64_t *out_signing_end_time);
+```
+"""
+function aws_s3_request_metrics_get_sign_end_timestamp_ns(metrics, out_signing_end_time)
+    ccall((:aws_s3_request_metrics_get_sign_end_timestamp_ns, libaws_c_s3), Cint, (Ptr{aws_s3_request_metrics}, Ptr{UInt64}), metrics, out_signing_end_time)
+end
+
+"""
+    aws_s3_request_metrics_get_signing_duration_ns(metrics, out_signing_duration)
+
+Documentation not found.
+### Prototype
+```c
+int aws_s3_request_metrics_get_signing_duration_ns( const struct aws_s3_request_metrics *metrics, uint64_t *out_signing_duration);
+```
+"""
+function aws_s3_request_metrics_get_signing_duration_ns(metrics, out_signing_duration)
+    ccall((:aws_s3_request_metrics_get_signing_duration_ns, libaws_c_s3), Cint, (Ptr{aws_s3_request_metrics}, Ptr{UInt64}), metrics, out_signing_duration)
+end
+
+"""
+    aws_s3_request_metrics_get_mem_acquire_start_timestamp_ns(metrics, out_mem_acquire_start_time)
+
+Documentation not found.
+### Prototype
+```c
+int aws_s3_request_metrics_get_mem_acquire_start_timestamp_ns( const struct aws_s3_request_metrics *metrics, uint64_t *out_mem_acquire_start_time);
+```
+"""
+function aws_s3_request_metrics_get_mem_acquire_start_timestamp_ns(metrics, out_mem_acquire_start_time)
+    ccall((:aws_s3_request_metrics_get_mem_acquire_start_timestamp_ns, libaws_c_s3), Cint, (Ptr{aws_s3_request_metrics}, Ptr{UInt64}), metrics, out_mem_acquire_start_time)
+end
+
+"""
+    aws_s3_request_metrics_get_mem_acquire_end_timestamp_ns(metrics, out_mem_acquire_end_time)
+
+Documentation not found.
+### Prototype
+```c
+int aws_s3_request_metrics_get_mem_acquire_end_timestamp_ns( const struct aws_s3_request_metrics *metrics, uint64_t *out_mem_acquire_end_time);
+```
+"""
+function aws_s3_request_metrics_get_mem_acquire_end_timestamp_ns(metrics, out_mem_acquire_end_time)
+    ccall((:aws_s3_request_metrics_get_mem_acquire_end_timestamp_ns, libaws_c_s3), Cint, (Ptr{aws_s3_request_metrics}, Ptr{UInt64}), metrics, out_mem_acquire_end_time)
+end
+
+"""
+    aws_s3_request_metrics_get_mem_acquire_duration_ns(metrics, out_mem_acquire_duration)
+
+Documentation not found.
+### Prototype
+```c
+int aws_s3_request_metrics_get_mem_acquire_duration_ns( const struct aws_s3_request_metrics *metrics, uint64_t *out_mem_acquire_duration);
+```
+"""
+function aws_s3_request_metrics_get_mem_acquire_duration_ns(metrics, out_mem_acquire_duration)
+    ccall((:aws_s3_request_metrics_get_mem_acquire_duration_ns, libaws_c_s3), Cint, (Ptr{aws_s3_request_metrics}, Ptr{UInt64}), metrics, out_mem_acquire_duration)
+end
+
+"""
+    aws_s3_request_metrics_get_delivery_start_timestamp_ns(metrics, out_delivery_start_time)
+
+Documentation not found.
+### Prototype
+```c
+int aws_s3_request_metrics_get_delivery_start_timestamp_ns( const struct aws_s3_request_metrics *metrics, uint64_t *out_delivery_start_time);
+```
+"""
+function aws_s3_request_metrics_get_delivery_start_timestamp_ns(metrics, out_delivery_start_time)
+    ccall((:aws_s3_request_metrics_get_delivery_start_timestamp_ns, libaws_c_s3), Cint, (Ptr{aws_s3_request_metrics}, Ptr{UInt64}), metrics, out_delivery_start_time)
+end
+
+"""
+    aws_s3_request_metrics_get_delivery_end_timestamp_ns(metrics, out_delivery_end_time)
+
+Documentation not found.
+### Prototype
+```c
+int aws_s3_request_metrics_get_delivery_end_timestamp_ns( const struct aws_s3_request_metrics *metrics, uint64_t *out_delivery_end_time);
+```
+"""
+function aws_s3_request_metrics_get_delivery_end_timestamp_ns(metrics, out_delivery_end_time)
+    ccall((:aws_s3_request_metrics_get_delivery_end_timestamp_ns, libaws_c_s3), Cint, (Ptr{aws_s3_request_metrics}, Ptr{UInt64}), metrics, out_delivery_end_time)
+end
+
+"""
+    aws_s3_request_metrics_get_delivery_duration_ns(metrics, out_delivery_duration)
+
+Documentation not found.
+### Prototype
+```c
+int aws_s3_request_metrics_get_delivery_duration_ns( const struct aws_s3_request_metrics *metrics, uint64_t *out_delivery_duration);
+```
+"""
+function aws_s3_request_metrics_get_delivery_duration_ns(metrics, out_delivery_duration)
+    ccall((:aws_s3_request_metrics_get_delivery_duration_ns, libaws_c_s3), Cint, (Ptr{aws_s3_request_metrics}, Ptr{UInt64}), metrics, out_delivery_duration)
+end
+
+"""
     aws_s3_request_metrics_get_receiving_duration_ns(metrics, out_receiving_duration)
 
 Documentation not found.
@@ -1053,16 +1711,29 @@ function aws_s3_request_metrics_get_ip_address(metrics, out_ip_address)
 end
 
 """
-    aws_s3_request_metrics_get_connection_id(metrics, out_connection_id)
+    aws_s3_request_metrics_get_connection_id(metrics, out_connection_ptr)
 
 Documentation not found.
 ### Prototype
 ```c
-int aws_s3_request_metrics_get_connection_id(const struct aws_s3_request_metrics *metrics, size_t *out_connection_id);
+int aws_s3_request_metrics_get_connection_id(const struct aws_s3_request_metrics *metrics, size_t *out_connection_ptr);
 ```
 """
-function aws_s3_request_metrics_get_connection_id(metrics, out_connection_id)
-    ccall((:aws_s3_request_metrics_get_connection_id, libaws_c_s3), Cint, (Ptr{aws_s3_request_metrics}, Ptr{Csize_t}), metrics, out_connection_id)
+function aws_s3_request_metrics_get_connection_id(metrics, out_connection_ptr)
+    ccall((:aws_s3_request_metrics_get_connection_id, libaws_c_s3), Cint, (Ptr{aws_s3_request_metrics}, Ptr{Csize_t}), metrics, out_connection_ptr)
+end
+
+"""
+    aws_s3_request_metrics_get_request_ptr(metrics, out_request_ptr)
+
+Documentation not found.
+### Prototype
+```c
+int aws_s3_request_metrics_get_request_ptr(const struct aws_s3_request_metrics *metrics, size_t *out_request_ptr);
+```
+"""
+function aws_s3_request_metrics_get_request_ptr(metrics, out_request_ptr)
+    ccall((:aws_s3_request_metrics_get_request_ptr, libaws_c_s3), Cint, (Ptr{aws_s3_request_metrics}, Ptr{Csize_t}), metrics, out_request_ptr)
 end
 
 """
@@ -1132,6 +1803,201 @@ function aws_s3_request_metrics_get_error_code(metrics)
 end
 
 """
+    aws_s3_request_metrics_get_retry_attempt(metrics)
+
+Documentation not found.
+### Prototype
+```c
+uint32_t aws_s3_request_metrics_get_retry_attempt(const struct aws_s3_request_metrics *metrics);
+```
+"""
+function aws_s3_request_metrics_get_retry_attempt(metrics)
+    ccall((:aws_s3_request_metrics_get_retry_attempt, libaws_c_s3), UInt32, (Ptr{aws_s3_request_metrics},), metrics)
+end
+
+"""
+    aws_s3_request_metrics_get_memory_allocated_from_pool(metrics)
+
+Documentation not found.
+### Prototype
+```c
+bool aws_s3_request_metrics_get_memory_allocated_from_pool(const struct aws_s3_request_metrics *metrics);
+```
+"""
+function aws_s3_request_metrics_get_memory_allocated_from_pool(metrics)
+    ccall((:aws_s3_request_metrics_get_memory_allocated_from_pool, libaws_c_s3), Bool, (Ptr{aws_s3_request_metrics},), metrics)
+end
+
+"""
+    aws_s3_request_metrics_get_part_range_start(metrics, out_part_range_start)
+
+Documentation not found.
+### Prototype
+```c
+void aws_s3_request_metrics_get_part_range_start( const struct aws_s3_request_metrics *metrics, uint64_t *out_part_range_start);
+```
+"""
+function aws_s3_request_metrics_get_part_range_start(metrics, out_part_range_start)
+    ccall((:aws_s3_request_metrics_get_part_range_start, libaws_c_s3), Cvoid, (Ptr{aws_s3_request_metrics}, Ptr{UInt64}), metrics, out_part_range_start)
+end
+
+"""
+    aws_s3_request_metrics_get_part_range_end(metrics, out_part_range_end)
+
+Documentation not found.
+### Prototype
+```c
+void aws_s3_request_metrics_get_part_range_end( const struct aws_s3_request_metrics *metrics, uint64_t *out_part_range_end);
+```
+"""
+function aws_s3_request_metrics_get_part_range_end(metrics, out_part_range_end)
+    ccall((:aws_s3_request_metrics_get_part_range_end, libaws_c_s3), Cvoid, (Ptr{aws_s3_request_metrics}, Ptr{UInt64}), metrics, out_part_range_end)
+end
+
+"""
+    aws_s3_request_metrics_get_part_number(metrics, out_part_number)
+
+Documentation not found.
+### Prototype
+```c
+void aws_s3_request_metrics_get_part_number(const struct aws_s3_request_metrics *metrics, uint32_t *out_part_number);
+```
+"""
+function aws_s3_request_metrics_get_part_number(metrics, out_part_number)
+    ccall((:aws_s3_request_metrics_get_part_number, libaws_c_s3), Cvoid, (Ptr{aws_s3_request_metrics}, Ptr{UInt32}), metrics, out_part_number)
+end
+
+"""
+    aws_s3_request_metrics_get_s3_request_first_attempt_start_timestamp_ns(metrics, out_s3_request_first_attempt_start_time)
+
+Documentation not found.
+### Prototype
+```c
+void aws_s3_request_metrics_get_s3_request_first_attempt_start_timestamp_ns( const struct aws_s3_request_metrics *metrics, uint64_t *out_s3_request_first_attempt_start_time);
+```
+"""
+function aws_s3_request_metrics_get_s3_request_first_attempt_start_timestamp_ns(metrics, out_s3_request_first_attempt_start_time)
+    ccall((:aws_s3_request_metrics_get_s3_request_first_attempt_start_timestamp_ns, libaws_c_s3), Cvoid, (Ptr{aws_s3_request_metrics}, Ptr{UInt64}), metrics, out_s3_request_first_attempt_start_time)
+end
+
+"""
+    aws_s3_request_metrics_get_s3_request_last_attempt_end_timestamp_ns(metrics, out_s3_request_last_attempt_end_time)
+
+Documentation not found.
+### Prototype
+```c
+int aws_s3_request_metrics_get_s3_request_last_attempt_end_timestamp_ns( const struct aws_s3_request_metrics *metrics, uint64_t *out_s3_request_last_attempt_end_time);
+```
+"""
+function aws_s3_request_metrics_get_s3_request_last_attempt_end_timestamp_ns(metrics, out_s3_request_last_attempt_end_time)
+    ccall((:aws_s3_request_metrics_get_s3_request_last_attempt_end_timestamp_ns, libaws_c_s3), Cint, (Ptr{aws_s3_request_metrics}, Ptr{UInt64}), metrics, out_s3_request_last_attempt_end_time)
+end
+
+"""
+    aws_s3_request_metrics_get_s3_request_total_duration_ns(metrics, out_request_duration)
+
+Documentation not found.
+### Prototype
+```c
+int aws_s3_request_metrics_get_s3_request_total_duration_ns( const struct aws_s3_request_metrics *metrics, uint64_t *out_request_duration);
+```
+"""
+function aws_s3_request_metrics_get_s3_request_total_duration_ns(metrics, out_request_duration)
+    ccall((:aws_s3_request_metrics_get_s3_request_total_duration_ns, libaws_c_s3), Cint, (Ptr{aws_s3_request_metrics}, Ptr{UInt64}), metrics, out_request_duration)
+end
+
+"""
+    aws_s3_request_metrics_get_conn_acquire_start_timestamp_ns(metrics, out_conn_acquire_start_time)
+
+Documentation not found.
+### Prototype
+```c
+int aws_s3_request_metrics_get_conn_acquire_start_timestamp_ns( const struct aws_s3_request_metrics *metrics, uint64_t *out_conn_acquire_start_time);
+```
+"""
+function aws_s3_request_metrics_get_conn_acquire_start_timestamp_ns(metrics, out_conn_acquire_start_time)
+    ccall((:aws_s3_request_metrics_get_conn_acquire_start_timestamp_ns, libaws_c_s3), Cint, (Ptr{aws_s3_request_metrics}, Ptr{UInt64}), metrics, out_conn_acquire_start_time)
+end
+
+"""
+    aws_s3_request_metrics_get_conn_acquire_end_timestamp_ns(metrics, out_conn_acquire_end_time)
+
+Documentation not found.
+### Prototype
+```c
+int aws_s3_request_metrics_get_conn_acquire_end_timestamp_ns( const struct aws_s3_request_metrics *metrics, uint64_t *out_conn_acquire_end_time);
+```
+"""
+function aws_s3_request_metrics_get_conn_acquire_end_timestamp_ns(metrics, out_conn_acquire_end_time)
+    ccall((:aws_s3_request_metrics_get_conn_acquire_end_timestamp_ns, libaws_c_s3), Cint, (Ptr{aws_s3_request_metrics}, Ptr{UInt64}), metrics, out_conn_acquire_end_time)
+end
+
+"""
+    aws_s3_request_metrics_get_conn_acquire_duration_ns(metrics, out_conn_acquire_duration)
+
+Documentation not found.
+### Prototype
+```c
+int aws_s3_request_metrics_get_conn_acquire_duration_ns( const struct aws_s3_request_metrics *metrics, uint64_t *out_conn_acquire_duration);
+```
+"""
+function aws_s3_request_metrics_get_conn_acquire_duration_ns(metrics, out_conn_acquire_duration)
+    ccall((:aws_s3_request_metrics_get_conn_acquire_duration_ns, libaws_c_s3), Cint, (Ptr{aws_s3_request_metrics}, Ptr{UInt64}), metrics, out_conn_acquire_duration)
+end
+
+"""
+    aws_s3_request_metrics_get_retry_delay_start_timestamp_ns(metrics, out_retry_delay_start_time)
+
+Documentation not found.
+### Prototype
+```c
+int aws_s3_request_metrics_get_retry_delay_start_timestamp_ns( const struct aws_s3_request_metrics *metrics, uint64_t *out_retry_delay_start_time);
+```
+"""
+function aws_s3_request_metrics_get_retry_delay_start_timestamp_ns(metrics, out_retry_delay_start_time)
+    ccall((:aws_s3_request_metrics_get_retry_delay_start_timestamp_ns, libaws_c_s3), Cint, (Ptr{aws_s3_request_metrics}, Ptr{UInt64}), metrics, out_retry_delay_start_time)
+end
+
+"""
+    aws_s3_request_metrics_get_retry_delay_end_timestamp_ns(metrics, out_retry_delay_end_time)
+
+Documentation not found.
+### Prototype
+```c
+int aws_s3_request_metrics_get_retry_delay_end_timestamp_ns( const struct aws_s3_request_metrics *metrics, uint64_t *out_retry_delay_end_time);
+```
+"""
+function aws_s3_request_metrics_get_retry_delay_end_timestamp_ns(metrics, out_retry_delay_end_time)
+    ccall((:aws_s3_request_metrics_get_retry_delay_end_timestamp_ns, libaws_c_s3), Cint, (Ptr{aws_s3_request_metrics}, Ptr{UInt64}), metrics, out_retry_delay_end_time)
+end
+
+"""
+    aws_s3_request_metrics_get_retry_delay_duration_ns(metrics, out_retry_delay_duration)
+
+Documentation not found.
+### Prototype
+```c
+int aws_s3_request_metrics_get_retry_delay_duration_ns( const struct aws_s3_request_metrics *metrics, uint64_t *out_retry_delay_duration);
+```
+"""
+function aws_s3_request_metrics_get_retry_delay_duration_ns(metrics, out_retry_delay_duration)
+    ccall((:aws_s3_request_metrics_get_retry_delay_duration_ns, libaws_c_s3), Cint, (Ptr{aws_s3_request_metrics}, Ptr{UInt64}), metrics, out_retry_delay_duration)
+end
+
+"""
+    aws_s3_request_metrics_get_service_call_duration_ns(metrics, out_service_call_duration)
+
+Documentation not found.
+### Prototype
+```c
+int aws_s3_request_metrics_get_service_call_duration_ns( const struct aws_s3_request_metrics *metrics, uint64_t *out_service_call_duration);
+```
+"""
+function aws_s3_request_metrics_get_service_call_duration_ns(metrics, out_service_call_duration)
+    ccall((:aws_s3_request_metrics_get_service_call_duration_ns, libaws_c_s3), Cint, (Ptr{aws_s3_request_metrics}, Ptr{UInt64}), metrics, out_service_call_duration)
+end
+
+"""
     aws_s3_endpoint_resolver_new(allocator)
 
 Creates a new S3 endpoint resolver. Warning: Before using this header, you have to enable it by setting cmake config AWS\\_ENABLE\\_S3\\_ENDPOINT\\_RESOLVER=ON
@@ -1153,6 +2019,7 @@ Documentation not found.
 struct aws_credentials_properties_s3express
     host::aws_byte_cursor
     region::aws_byte_cursor
+    headers::Ptr{aws_http_headers}
 end
 
 """
