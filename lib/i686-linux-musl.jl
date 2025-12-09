@@ -1,35 +1,6 @@
 using CEnum: CEnum, @cenum
 
 """
-    __JL_Ctag_17
-
-Documentation not found.
-"""
-struct __JL_Ctag_17
-    use_double_uri_encode::UInt32
-    should_normalize_uri_path::UInt32
-    omit_session_token::UInt32
-end
-function Base.getproperty(x::Ptr{__JL_Ctag_17}, f::Symbol)
-    f === :use_double_uri_encode && return (Ptr{UInt32}(x + 0), 0, 1)
-    f === :should_normalize_uri_path && return (Ptr{UInt32}(x + 0), 1, 1)
-    f === :omit_session_token && return (Ptr{UInt32}(x + 0), 2, 1)
-    return getfield(x, f)
-end
-
-function Base.getproperty(x::__JL_Ctag_17, f::Symbol)
-    r = Ref{__JL_Ctag_17}(x)
-    ptr = Base.unsafe_convert(Ptr{__JL_Ctag_17}, r)
-    fptr = getproperty(ptr, f)
-    GC.@preserve r unsafe_load(fptr)
-end
-
-function Base.setproperty!(x::Ptr{__JL_Ctag_17}, f::Symbol, v)
-    unsafe_store!(getproperty(x, f), v)
-end
-
-
-"""
     aws_s3_errors
 
 Documentation not found.
@@ -167,15 +138,14 @@ function aws_s3_get_platforms_with_recommended_config()
 end
 
 """
-aws\\_future<aws\\_s3\\_buffer\\_ticket*> Buffer ticket future used for reservations.
+Documentation not found.
 """
 mutable struct aws_future_s3_buffer_ticket end
 
 """
     aws_future_s3_buffer_ticket_new(alloc)
 
-aws\\_future<aws\\_s3\\_buffer\\_ticket*> Buffer ticket future used for reservations.
-
+Documentation not found.
 ### Prototype
 ```c
 AWS_FUTURE_T_POINTER_WITH_RELEASE_DECLARATION(aws_future_s3_buffer_ticket, struct aws_s3_buffer_ticket, AWS_S3_API);
@@ -210,8 +180,7 @@ end
 """
     aws_future_s3_buffer_ticket_set_result_by_move(future, pointer_address)
 
-aws\\_future<aws\\_s3\\_buffer\\_ticket*> Buffer ticket future used for reservations.
-
+Documentation not found.
 ### Prototype
 ```c
 AWS_FUTURE_T_POINTER_WITH_RELEASE_DECLARATION(aws_future_s3_buffer_ticket, struct aws_s3_buffer_ticket, AWS_S3_API);
@@ -224,8 +193,7 @@ end
 """
     aws_future_s3_buffer_ticket_get_result_by_move(future)
 
-aws\\_future<aws\\_s3\\_buffer\\_ticket*> Buffer ticket future used for reservations.
-
+Documentation not found.
 ### Prototype
 ```c
 AWS_FUTURE_T_POINTER_WITH_RELEASE_DECLARATION(aws_future_s3_buffer_ticket, struct aws_s3_buffer_ticket, AWS_S3_API);
@@ -238,8 +206,7 @@ end
 """
     aws_future_s3_buffer_ticket_peek_result(future)
 
-aws\\_future<aws\\_s3\\_buffer\\_ticket*> Buffer ticket future used for reservations.
-
+Documentation not found.
 ### Prototype
 ```c
 AWS_FUTURE_T_POINTER_WITH_RELEASE_DECLARATION(aws_future_s3_buffer_ticket, struct aws_s3_buffer_ticket, AWS_S3_API);
@@ -252,8 +219,7 @@ end
 """
     aws_future_s3_buffer_ticket_acquire(future)
 
-aws\\_future<aws\\_s3\\_buffer\\_ticket*> Buffer ticket future used for reservations.
-
+Documentation not found.
 ### Prototype
 ```c
 AWS_FUTURE_T_POINTER_WITH_RELEASE_DECLARATION(aws_future_s3_buffer_ticket, struct aws_s3_buffer_ticket, AWS_S3_API);
@@ -266,8 +232,7 @@ end
 """
     aws_future_s3_buffer_ticket_release(future)
 
-aws\\_future<aws\\_s3\\_buffer\\_ticket*> Buffer ticket future used for reservations.
-
+Documentation not found.
 ### Prototype
 ```c
 AWS_FUTURE_T_POINTER_WITH_RELEASE_DECLARATION(aws_future_s3_buffer_ticket, struct aws_s3_buffer_ticket, AWS_S3_API);
@@ -280,8 +245,7 @@ end
 """
     aws_future_s3_buffer_ticket_set_error(future, error_code)
 
-aws\\_future<aws\\_s3\\_buffer\\_ticket*> Buffer ticket future used for reservations.
-
+Documentation not found.
 ### Prototype
 ```c
 AWS_FUTURE_T_POINTER_WITH_RELEASE_DECLARATION(aws_future_s3_buffer_ticket, struct aws_s3_buffer_ticket, AWS_S3_API);
@@ -294,8 +258,7 @@ end
 """
     aws_future_s3_buffer_ticket_is_done(future)
 
-aws\\_future<aws\\_s3\\_buffer\\_ticket*> Buffer ticket future used for reservations.
-
+Documentation not found.
 ### Prototype
 ```c
 AWS_FUTURE_T_POINTER_WITH_RELEASE_DECLARATION(aws_future_s3_buffer_ticket, struct aws_s3_buffer_ticket, AWS_S3_API);
@@ -308,8 +271,7 @@ end
 """
     aws_future_s3_buffer_ticket_get_error(future)
 
-aws\\_future<aws\\_s3\\_buffer\\_ticket*> Buffer ticket future used for reservations.
-
+Documentation not found.
 ### Prototype
 ```c
 AWS_FUTURE_T_POINTER_WITH_RELEASE_DECLARATION(aws_future_s3_buffer_ticket, struct aws_s3_buffer_ticket, AWS_S3_API);
@@ -322,8 +284,7 @@ end
 """
     aws_future_s3_buffer_ticket_register_callback(future, on_done, user_data)
 
-aws\\_future<aws\\_s3\\_buffer\\_ticket*> Buffer ticket future used for reservations.
-
+Documentation not found.
 ### Prototype
 ```c
 AWS_FUTURE_T_POINTER_WITH_RELEASE_DECLARATION(aws_future_s3_buffer_ticket, struct aws_s3_buffer_ticket, AWS_S3_API);
@@ -336,8 +297,7 @@ end
 """
     aws_future_s3_buffer_ticket_register_callback_if_not_done(future, on_done, user_data)
 
-aws\\_future<aws\\_s3\\_buffer\\_ticket*> Buffer ticket future used for reservations.
-
+Documentation not found.
 ### Prototype
 ```c
 AWS_FUTURE_T_POINTER_WITH_RELEASE_DECLARATION(aws_future_s3_buffer_ticket, struct aws_s3_buffer_ticket, AWS_S3_API);
@@ -350,8 +310,7 @@ end
 """
     aws_future_s3_buffer_ticket_register_event_loop_callback(future, event_loop, on_done, user_data)
 
-aws\\_future<aws\\_s3\\_buffer\\_ticket*> Buffer ticket future used for reservations.
-
+Documentation not found.
 ### Prototype
 ```c
 AWS_FUTURE_T_POINTER_WITH_RELEASE_DECLARATION(aws_future_s3_buffer_ticket, struct aws_s3_buffer_ticket, AWS_S3_API);
@@ -364,8 +323,7 @@ end
 """
     aws_future_s3_buffer_ticket_register_channel_callback(future, channel, on_done, user_data)
 
-aws\\_future<aws\\_s3\\_buffer\\_ticket*> Buffer ticket future used for reservations.
-
+Documentation not found.
 ### Prototype
 ```c
 AWS_FUTURE_T_POINTER_WITH_RELEASE_DECLARATION(aws_future_s3_buffer_ticket, struct aws_s3_buffer_ticket, AWS_S3_API);
@@ -378,8 +336,7 @@ end
 """
     aws_future_s3_buffer_ticket_wait(future, timeout_ns)
 
-aws\\_future<aws\\_s3\\_buffer\\_ticket*> Buffer ticket future used for reservations.
-
+Documentation not found.
 ### Prototype
 ```c
 AWS_FUTURE_T_POINTER_WITH_RELEASE_DECLARATION(aws_future_s3_buffer_ticket, struct aws_s3_buffer_ticket, AWS_S3_API);
@@ -458,6 +415,9 @@ Documentation not found.
 struct aws_s3_buffer_pool_vtable
     reserve::Ptr{Cvoid}
     trim::Ptr{Cvoid}
+    add_special_size::Ptr{Cvoid}
+    release_special_size::Ptr{Cvoid}
+    derive_aligned_buffer_size::Ptr{Cvoid}
     acquire::Ptr{Cvoid}
     release::Ptr{Cvoid}
 end
@@ -542,6 +502,61 @@ end
 Factory to construct the pool for the given config. Passes along buffer related info configured on the client, which factory may ignore when considering how to construct pool. This implementation should fail if pool cannot be constructed for some reason (ex. if config params cannot be met), by logging failure reason, returning null and raising aws\\_error.
 """
 const aws_s3_buffer_pool_factory_fn = Cvoid
+
+"""
+    aws_s3_buffer_pool_add_special_size(buffer_pool, buffer_size)
+
+Optimize the buffer pool for allocations of a specific size. Creates a separate list of blocks dedicated to this size for better memory efficiency. Allocations of exactly this size will use these special blocks instead of the regular primary/secondary storage.
+
+# Arguments
+* `buffer_pool`: The buffer pool to optimize
+* `buffer_size`: The size to optimize for (must be > 0)
+# Returns
+AWS\\_OP\\_SUCCESS on success, AWS\\_OP\\_ERR on failure
+### Prototype
+```c
+int aws_s3_buffer_pool_add_special_size(struct aws_s3_buffer_pool *buffer_pool, size_t buffer_size);
+```
+"""
+function aws_s3_buffer_pool_add_special_size(buffer_pool, buffer_size)
+    ccall((:aws_s3_buffer_pool_add_special_size, libaws_c_s3), Cint, (Ptr{aws_s3_buffer_pool}, Csize_t), buffer_pool, buffer_size)
+end
+
+"""
+    aws_s3_buffer_pool_release_special_size(buffer_pool, buffer_size)
+
+Release the special-sized blocks from the buffer pool. Should be called when done with the special-sized allocations.
+
+# Arguments
+* `buffer_pool`: The buffer pool
+* `buffer_size`: The special size to release blocks for
+### Prototype
+```c
+void aws_s3_buffer_pool_release_special_size(struct aws_s3_buffer_pool *buffer_pool, size_t buffer_size);
+```
+"""
+function aws_s3_buffer_pool_release_special_size(buffer_pool, buffer_size)
+    ccall((:aws_s3_buffer_pool_release_special_size, libaws_c_s3), Cvoid, (Ptr{aws_s3_buffer_pool}, Csize_t), buffer_pool, buffer_size)
+end
+
+"""
+    aws_s3_buffer_pool_derive_aligned_buffer_size(buffer_pool, size)
+
+Align a range size to the buffer pool's allocation strategy. This function determines the optimal aligned size based on the buffer pool's configuration. For sizes within the primary allocation range, it aligns to chunk boundaries. For larger sizes that go to secondary storage, it returns the size as-is.
+
+# Arguments
+* `buffer_pool`: The buffer pool to use for alignment (can be NULL, in which case size is returned unchanged)
+* `size`: The size to align
+# Returns
+The aligned size that's optimal for the buffer pool's allocation strategy
+### Prototype
+```c
+uint64_t aws_s3_buffer_pool_derive_aligned_buffer_size(struct aws_s3_buffer_pool *buffer_pool, uint64_t size);
+```
+"""
+function aws_s3_buffer_pool_derive_aligned_buffer_size(buffer_pool, size)
+    ccall((:aws_s3_buffer_pool_derive_aligned_buffer_size, libaws_c_s3), UInt64, (Ptr{aws_s3_buffer_pool}, UInt64), buffer_pool, size)
+end
 
 """
 Documentation not found.
@@ -905,6 +920,7 @@ struct aws_s3_meta_request_options
     send_using_async_writes::Bool
     checksum_config::Ptr{aws_s3_checksum_config}
     part_size::UInt64
+    force_dynamic_part_size::Bool
     multipart_upload_threshold::UInt64
     user_data::Ptr{Cvoid}
     headers_callback::Ptr{aws_s3_meta_request_headers_callback_fn}
@@ -919,6 +935,7 @@ struct aws_s3_meta_request_options
     resume_token::Ptr{aws_s3_meta_request_resume_token}
     object_size_hint::Ptr{UInt64}
     copy_source_uri::aws_byte_cursor
+    max_active_connections_override::UInt32
 end
 
 """
@@ -1753,6 +1770,58 @@ uint32_t aws_s3_request_metrics_get_retry_attempt(const struct aws_s3_request_me
 """
 function aws_s3_request_metrics_get_retry_attempt(metrics)
     ccall((:aws_s3_request_metrics_get_retry_attempt, libaws_c_s3), UInt32, (Ptr{aws_s3_request_metrics},), metrics)
+end
+
+"""
+    aws_s3_request_metrics_get_memory_allocated_from_pool(metrics)
+
+Documentation not found.
+### Prototype
+```c
+bool aws_s3_request_metrics_get_memory_allocated_from_pool(const struct aws_s3_request_metrics *metrics);
+```
+"""
+function aws_s3_request_metrics_get_memory_allocated_from_pool(metrics)
+    ccall((:aws_s3_request_metrics_get_memory_allocated_from_pool, libaws_c_s3), Bool, (Ptr{aws_s3_request_metrics},), metrics)
+end
+
+"""
+    aws_s3_request_metrics_get_part_range_start(metrics, out_part_range_start)
+
+Documentation not found.
+### Prototype
+```c
+void aws_s3_request_metrics_get_part_range_start( const struct aws_s3_request_metrics *metrics, uint64_t *out_part_range_start);
+```
+"""
+function aws_s3_request_metrics_get_part_range_start(metrics, out_part_range_start)
+    ccall((:aws_s3_request_metrics_get_part_range_start, libaws_c_s3), Cvoid, (Ptr{aws_s3_request_metrics}, Ptr{UInt64}), metrics, out_part_range_start)
+end
+
+"""
+    aws_s3_request_metrics_get_part_range_end(metrics, out_part_range_end)
+
+Documentation not found.
+### Prototype
+```c
+void aws_s3_request_metrics_get_part_range_end( const struct aws_s3_request_metrics *metrics, uint64_t *out_part_range_end);
+```
+"""
+function aws_s3_request_metrics_get_part_range_end(metrics, out_part_range_end)
+    ccall((:aws_s3_request_metrics_get_part_range_end, libaws_c_s3), Cvoid, (Ptr{aws_s3_request_metrics}, Ptr{UInt64}), metrics, out_part_range_end)
+end
+
+"""
+    aws_s3_request_metrics_get_part_number(metrics, out_part_number)
+
+Documentation not found.
+### Prototype
+```c
+void aws_s3_request_metrics_get_part_number(const struct aws_s3_request_metrics *metrics, uint32_t *out_part_number);
+```
+"""
+function aws_s3_request_metrics_get_part_number(metrics, out_part_number)
+    ccall((:aws_s3_request_metrics_get_part_number, libaws_c_s3), Cvoid, (Ptr{aws_s3_request_metrics}, Ptr{UInt32}), metrics, out_part_number)
 end
 
 """
