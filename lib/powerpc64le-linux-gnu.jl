@@ -167,14 +167,15 @@ function aws_s3_get_platforms_with_recommended_config()
 end
 
 """
-Documentation not found.
+aws\\_future<aws\\_s3\\_buffer\\_ticket*> Buffer ticket future used for reservations.
 """
 mutable struct aws_future_s3_buffer_ticket end
 
 """
     aws_future_s3_buffer_ticket_new(alloc)
 
-Documentation not found.
+aws\\_future<aws\\_s3\\_buffer\\_ticket*> Buffer ticket future used for reservations.
+
 ### Prototype
 ```c
 AWS_FUTURE_T_POINTER_WITH_RELEASE_DECLARATION(aws_future_s3_buffer_ticket, struct aws_s3_buffer_ticket, AWS_S3_API);
@@ -209,7 +210,8 @@ end
 """
     aws_future_s3_buffer_ticket_set_result_by_move(future, pointer_address)
 
-Documentation not found.
+aws\\_future<aws\\_s3\\_buffer\\_ticket*> Buffer ticket future used for reservations.
+
 ### Prototype
 ```c
 AWS_FUTURE_T_POINTER_WITH_RELEASE_DECLARATION(aws_future_s3_buffer_ticket, struct aws_s3_buffer_ticket, AWS_S3_API);
@@ -222,7 +224,8 @@ end
 """
     aws_future_s3_buffer_ticket_get_result_by_move(future)
 
-Documentation not found.
+aws\\_future<aws\\_s3\\_buffer\\_ticket*> Buffer ticket future used for reservations.
+
 ### Prototype
 ```c
 AWS_FUTURE_T_POINTER_WITH_RELEASE_DECLARATION(aws_future_s3_buffer_ticket, struct aws_s3_buffer_ticket, AWS_S3_API);
@@ -235,7 +238,8 @@ end
 """
     aws_future_s3_buffer_ticket_peek_result(future)
 
-Documentation not found.
+aws\\_future<aws\\_s3\\_buffer\\_ticket*> Buffer ticket future used for reservations.
+
 ### Prototype
 ```c
 AWS_FUTURE_T_POINTER_WITH_RELEASE_DECLARATION(aws_future_s3_buffer_ticket, struct aws_s3_buffer_ticket, AWS_S3_API);
@@ -248,7 +252,8 @@ end
 """
     aws_future_s3_buffer_ticket_acquire(future)
 
-Documentation not found.
+aws\\_future<aws\\_s3\\_buffer\\_ticket*> Buffer ticket future used for reservations.
+
 ### Prototype
 ```c
 AWS_FUTURE_T_POINTER_WITH_RELEASE_DECLARATION(aws_future_s3_buffer_ticket, struct aws_s3_buffer_ticket, AWS_S3_API);
@@ -261,7 +266,8 @@ end
 """
     aws_future_s3_buffer_ticket_release(future)
 
-Documentation not found.
+aws\\_future<aws\\_s3\\_buffer\\_ticket*> Buffer ticket future used for reservations.
+
 ### Prototype
 ```c
 AWS_FUTURE_T_POINTER_WITH_RELEASE_DECLARATION(aws_future_s3_buffer_ticket, struct aws_s3_buffer_ticket, AWS_S3_API);
@@ -274,7 +280,8 @@ end
 """
     aws_future_s3_buffer_ticket_set_error(future, error_code)
 
-Documentation not found.
+aws\\_future<aws\\_s3\\_buffer\\_ticket*> Buffer ticket future used for reservations.
+
 ### Prototype
 ```c
 AWS_FUTURE_T_POINTER_WITH_RELEASE_DECLARATION(aws_future_s3_buffer_ticket, struct aws_s3_buffer_ticket, AWS_S3_API);
@@ -287,7 +294,8 @@ end
 """
     aws_future_s3_buffer_ticket_is_done(future)
 
-Documentation not found.
+aws\\_future<aws\\_s3\\_buffer\\_ticket*> Buffer ticket future used for reservations.
+
 ### Prototype
 ```c
 AWS_FUTURE_T_POINTER_WITH_RELEASE_DECLARATION(aws_future_s3_buffer_ticket, struct aws_s3_buffer_ticket, AWS_S3_API);
@@ -300,7 +308,8 @@ end
 """
     aws_future_s3_buffer_ticket_get_error(future)
 
-Documentation not found.
+aws\\_future<aws\\_s3\\_buffer\\_ticket*> Buffer ticket future used for reservations.
+
 ### Prototype
 ```c
 AWS_FUTURE_T_POINTER_WITH_RELEASE_DECLARATION(aws_future_s3_buffer_ticket, struct aws_s3_buffer_ticket, AWS_S3_API);
@@ -313,7 +322,8 @@ end
 """
     aws_future_s3_buffer_ticket_register_callback(future, on_done, user_data)
 
-Documentation not found.
+aws\\_future<aws\\_s3\\_buffer\\_ticket*> Buffer ticket future used for reservations.
+
 ### Prototype
 ```c
 AWS_FUTURE_T_POINTER_WITH_RELEASE_DECLARATION(aws_future_s3_buffer_ticket, struct aws_s3_buffer_ticket, AWS_S3_API);
@@ -326,7 +336,8 @@ end
 """
     aws_future_s3_buffer_ticket_register_callback_if_not_done(future, on_done, user_data)
 
-Documentation not found.
+aws\\_future<aws\\_s3\\_buffer\\_ticket*> Buffer ticket future used for reservations.
+
 ### Prototype
 ```c
 AWS_FUTURE_T_POINTER_WITH_RELEASE_DECLARATION(aws_future_s3_buffer_ticket, struct aws_s3_buffer_ticket, AWS_S3_API);
@@ -339,7 +350,8 @@ end
 """
     aws_future_s3_buffer_ticket_register_event_loop_callback(future, event_loop, on_done, user_data)
 
-Documentation not found.
+aws\\_future<aws\\_s3\\_buffer\\_ticket*> Buffer ticket future used for reservations.
+
 ### Prototype
 ```c
 AWS_FUTURE_T_POINTER_WITH_RELEASE_DECLARATION(aws_future_s3_buffer_ticket, struct aws_s3_buffer_ticket, AWS_S3_API);
@@ -352,7 +364,8 @@ end
 """
     aws_future_s3_buffer_ticket_register_channel_callback(future, channel, on_done, user_data)
 
-Documentation not found.
+aws\\_future<aws\\_s3\\_buffer\\_ticket*> Buffer ticket future used for reservations.
+
 ### Prototype
 ```c
 AWS_FUTURE_T_POINTER_WITH_RELEASE_DECLARATION(aws_future_s3_buffer_ticket, struct aws_s3_buffer_ticket, AWS_S3_API);
@@ -365,7 +378,8 @@ end
 """
     aws_future_s3_buffer_ticket_wait(future, timeout_ns)
 
-Documentation not found.
+aws\\_future<aws\\_s3\\_buffer\\_ticket*> Buffer ticket future used for reservations.
+
 ### Prototype
 ```c
 AWS_FUTURE_T_POINTER_WITH_RELEASE_DECLARATION(aws_future_s3_buffer_ticket, struct aws_s3_buffer_ticket, AWS_S3_API);
@@ -1120,7 +1134,7 @@ If the client was created with `enable_read_backpressure` set true, each meta re
 
 If `enable_read_backpressure` is false this call will have no effect, no backpressure is being applied and data is being downloaded as fast as possible.
 
-WARNING: This feature is experimental. Currently, backpressure is only applied to GetObject requests which are split into multiple parts, and you may still receive some data after the window reaches 0.
+WARNING: This feature is experimental. Currently, backpressure is only applied to GetObject requests which are split into multiple parts, - If you set body\\_callback, no more data will be delivered once the window reaches 0. - If you set body\\_callback\\_ex, you may still receive some data after the window reaches 0. TODO: fix it.
 
 ### Prototype
 ```c
