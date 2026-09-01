@@ -64,12 +64,13 @@ Documentation not found.
     AWS_ERROR_S3_EXCEEDS_MEMORY_LIMIT = 14362
     AWS_ERROR_S3_INVALID_MEMORY_LIMIT_CONFIG = 14363
     AWS_ERROR_S3EXPRESS_CREATE_SESSION_FAILED = 14364
-    AWS_ERROR_S3_INTERNAL_PART_SIZE_MISMATCH_RETRYING_WITH_RANGE = 14365
+    AWS_ERROR_S3_INTERNAL_BUFFER_SIZE_MISMATCH_RETRYING_WITH_RANGE = 14365
     AWS_ERROR_S3_REQUEST_HAS_COMPLETED = 14366
     AWS_ERROR_S3_RECV_FILE_ALREADY_EXISTS = 14367
     AWS_ERROR_S3_RECV_FILE_NOT_FOUND = 14368
     AWS_ERROR_S3_REQUEST_TIMEOUT = 14369
     AWS_ERROR_S3_BUFFER_ALLOCATION_FAILED = 14370
+    AWS_ERROR_S3_INTERNAL_PART_SIZE_MISMATCH_RETRYING_WITH_RANGE = 14365
     AWS_ERROR_S3_END_RANGE = 15359
 end
 
@@ -733,6 +734,18 @@ Documentation not found.
 """
 const aws_s3_client_shutdown_complete_callback_fn = Cvoid
 
+# typedef void ( aws_s3_meta_request_pause_complete_fn ) ( struct aws_s3_meta_request * meta_request , struct aws_s3_meta_request_resume_token * resume_token , int error_code , void * user_data )
+"""
+Callback for async pause completion or on-error resume token delivery. Delivers the resume token once the meta request finishes.
+
+# Arguments
+* `meta_request`: The meta request that was paused or failed.
+* `resume_token`: The resume token (NULL if pause failed). Caller must acquire to keep.
+* `error_code`: AWS\\_ERROR\\_SUCCESS if paused, or the error code that caused the failure.
+* `user_data`: User data passed to pause\\_async or from meta request options.
+"""
+const aws_s3_meta_request_pause_complete_fn = Cvoid
+
 # typedef struct aws_string * ( aws_s3_meta_request_full_object_checksum_fn ) ( struct aws_s3_meta_request * meta_request , void * user_data )
 """
 Optional callback, for you to provide the full object checksum after the object was read. Client will NOT check the checksum provided before sending it to the server.
@@ -778,7 +791,12 @@ Documentation not found.
     AWS_SCA_SHA1 = 3
     AWS_SCA_SHA256 = 4
     AWS_SCA_CRC64NVME = 5
-    AWS_SCA_END = 5
+    AWS_SCA_SHA512 = 6
+    AWS_SCA_XXHASH64 = 7
+    AWS_SCA_XXHASH3_64 = 8
+    AWS_SCA_XXHASH3_128 = 9
+    AWS_SCA_END = 9
+    AWS_SCA_UNKNOWN = 10
 end
 
 """
@@ -946,7 +964,7 @@ mutable struct aws_s3_meta_request_resume_token end
 
 Options for a new meta request, ie, file transfer that will be handled by the high performance client.
 
-There are several ways to pass the request's body data: 1) If the data is already in memory, set the body-stream on `message`. 2) If the data is on disk, set `send_filepath` for best performance. 3) If the data is available, but copying each chunk is asynchronous, set `send_async_stream`. 4) If you're not sure when each chunk of data will be available, use `send_using_async_writes`.
+There are several ways to pass the request's body data: 1) If the data is already in memory, set the body-stream on `message`. 2) If the data is on disk, set `send_filepath` for best performance. 3) If the data is available, but copying each chunk is asynchronous, set `send_async_stream`. 4) If you're not sure when each chunk of data will be available, use `send_using_async_writes`. 5) If the data is already in memory and you want the client to upload it with no extra copy or allocation, set `request_body` (DEFAULT meta request only).
 """
 struct aws_s3_meta_request_options
     type::aws_s3_meta_request_type
@@ -961,6 +979,7 @@ struct aws_s3_meta_request_options
     fio_opts::Ptr{aws_s3_file_io_options}
     send_async_stream::Ptr{aws_async_input_stream}
     send_using_async_writes::Bool
+    request_body::aws_byte_cursor
     checksum_config::Ptr{aws_s3_checksum_config}
     part_size::UInt64
     force_dynamic_part_size::Bool
@@ -979,6 +998,7 @@ struct aws_s3_meta_request_options
     object_size_hint::Ptr{UInt64}
     copy_source_uri::aws_byte_cursor
     max_active_connections_override::UInt32
+    on_error_resume_token::Ptr{aws_s3_meta_request_pause_complete_fn}
 end
 
 """
@@ -1134,7 +1154,7 @@ If the client was created with `enable_read_backpressure` set true, each meta re
 
 If `enable_read_backpressure` is false this call will have no effect, no backpressure is being applied and data is being downloaded as fast as possible.
 
-WARNING: This feature is experimental. Currently, backpressure is only applied to GetObject requests which are split into multiple parts, - If you set body\\_callback, no more data will be delivered once the window reaches 0. - If you set body\\_callback\\_ex, you may still receive some data after the window reaches 0. TODO: fix it.
+WARNING: This feature is experimental. Currently, backpressure is applied to GetObject requests, - If you set body\\_callback, no more data will be delivered once the window reaches 0. - If you set body\\_callback\\_ex, you may still receive some data after the window reaches 0. TODO: fix it.
 
 ### Prototype
 ```c
@@ -1161,7 +1181,7 @@ end
 """
     aws_s3_meta_request_pause(meta_request, out_resume_token)
 
-Note: pause is currently only supported on upload requests. In order to pause an ongoing upload, call [`aws_s3_meta_request_pause`](@ref)() that will return resume token. Token can be used to query the state of operation at the pausing time. To resume an upload that was paused, supply resume token in the meta request options structure member [`aws_s3_meta_request_options`](@ref).resume\\_token. The upload can be resumed either from the same client or a different one. Corner cases for resume upload are as follows: - upload is not MPU - fail with AWS\\_ERROR\\_UNSUPPORTED\\_OPERATION - pausing before MPU is created - NULL resume token returned. NULL resume token is equivalent to restarting upload - pausing in the middle of part transfer - return resume token. scheduling of new part uploads stops. - pausing after completeMPU started - return resume token. if s3 cannot find find associated MPU id when resuming with that token and num of parts uploaded equals to total num parts, then operation is a no op. Otherwise operation fails. Note: for no op case the call will succeed and finish/shutdown request callbacks will fire, but on headers callback will not fire. Note: similar to cancel pause does not cancel requests already in flight and and parts might complete after pause is requested.
+Note: this synchronous pause only works for uploads; calling it on any other meta request type fails with AWS\\_ERROR\\_UNSUPPORTED\\_OPERATION. To pause a download, use [`aws_s3_meta_request_pause_async`](@ref)() instead (which supports both uploads and downloads). In order to pause an ongoing upload, call [`aws_s3_meta_request_pause`](@ref)() that will return resume token. Token can be used to query the state of operation at the pausing time. To resume an upload that was paused, supply resume token in the meta request options structure member [`aws_s3_meta_request_options`](@ref).resume\\_token. The upload can be resumed either from the same client or a different one. Corner cases for resume upload are as follows: - upload is not MPU - fail with AWS\\_ERROR\\_UNSUPPORTED\\_OPERATION - pausing before MPU is created - NULL resume token returned. NULL resume token is equivalent to restarting upload - pausing in the middle of part transfer - return resume token. scheduling of new part uploads stops. - pausing after completeMPU started - return resume token. if s3 cannot find find associated MPU id when resuming with that token and num of parts uploaded equals to total num parts, then operation is a no op. Otherwise operation fails. Note: for no op case the call will succeed and finish/shutdown request callbacks will fire, but on headers callback will not fire. Note: similar to cancel pause does not cancel requests already in flight and and parts might complete after pause is requested.
 
 # Arguments
 * `meta_request`: pointer to the [`aws_s3_meta_request`](@ref) of the upload to be paused
@@ -1175,6 +1195,28 @@ int aws_s3_meta_request_pause( struct aws_s3_meta_request *meta_request, struct 
 """
 function aws_s3_meta_request_pause(meta_request, out_resume_token)
     ccall((:aws_s3_meta_request_pause, libaws_c_s3), Cint, (Ptr{aws_s3_meta_request}, Ptr{Ptr{aws_s3_meta_request_resume_token}}), meta_request, out_resume_token)
+end
+
+"""
+    aws_s3_meta_request_pause_async(meta_request, on_complete, user_data)
+
+Asynchronously pause a meta request. The on\\_complete callback fires once all in-flight work has completed and the resume token is ready.
+
+For download (GET) meta requests, this waits for file writes to flush before capturing the token. For upload (PUT) meta requests, this waits for in-flight parts to complete.
+
+# Arguments
+* `meta_request`: The meta request to pause.
+* `on_complete`: Callback invoked with the resume token once pause is complete.
+* `user_data`: User data for the callback.
+# Returns
+AWS\\_OP\\_SUCCESS if pause was initiated, or AWS\\_OP\\_ERR.
+### Prototype
+```c
+int aws_s3_meta_request_pause_async( struct aws_s3_meta_request *meta_request, aws_s3_meta_request_pause_complete_fn *on_complete, void *user_data);
+```
+"""
+function aws_s3_meta_request_pause_async(meta_request, on_complete, user_data)
+    ccall((:aws_s3_meta_request_pause_async, libaws_c_s3), Cint, (Ptr{aws_s3_meta_request}, Ptr{aws_s3_meta_request_pause_complete_fn}, Ptr{Cvoid}), meta_request, on_complete, user_data)
 end
 
 """
@@ -1292,6 +1334,123 @@ struct aws_byte_cursor aws_s3_meta_request_resume_token_upload_id( struct aws_s3
 """
 function aws_s3_meta_request_resume_token_upload_id(resume_token)
     ccall((:aws_s3_meta_request_resume_token_upload_id, libaws_c_s3), aws_byte_cursor, (Ptr{aws_s3_meta_request_resume_token},), resume_token)
+end
+
+"""
+    aws_s3_meta_request_resume_token_etag(resume_token)
+
+Documentation not found.
+### Prototype
+```c
+struct aws_byte_cursor aws_s3_meta_request_resume_token_etag( const struct aws_s3_meta_request_resume_token *resume_token);
+```
+"""
+function aws_s3_meta_request_resume_token_etag(resume_token)
+    ccall((:aws_s3_meta_request_resume_token_etag, libaws_c_s3), aws_byte_cursor, (Ptr{aws_s3_meta_request_resume_token},), resume_token)
+end
+
+"""
+    aws_s3_meta_request_resume_token_version_id(resume_token)
+
+Documentation not found.
+### Prototype
+```c
+struct aws_byte_cursor aws_s3_meta_request_resume_token_version_id( const struct aws_s3_meta_request_resume_token *resume_token);
+```
+"""
+function aws_s3_meta_request_resume_token_version_id(resume_token)
+    ccall((:aws_s3_meta_request_resume_token_version_id, libaws_c_s3), aws_byte_cursor, (Ptr{aws_s3_meta_request_resume_token},), resume_token)
+end
+
+"""
+    aws_s3_meta_request_resume_token_s3_object_last_modified(resume_token)
+
+Documentation not found.
+### Prototype
+```c
+struct aws_byte_cursor aws_s3_meta_request_resume_token_s3_object_last_modified( const struct aws_s3_meta_request_resume_token *resume_token);
+```
+"""
+function aws_s3_meta_request_resume_token_s3_object_last_modified(resume_token)
+    ccall((:aws_s3_meta_request_resume_token_s3_object_last_modified, libaws_c_s3), aws_byte_cursor, (Ptr{aws_s3_meta_request_resume_token},), resume_token)
+end
+
+"""
+    aws_s3_meta_request_resume_token_object_size(resume_token)
+
+Documentation not found.
+### Prototype
+```c
+uint64_t aws_s3_meta_request_resume_token_object_size(const struct aws_s3_meta_request_resume_token *resume_token);
+```
+"""
+function aws_s3_meta_request_resume_token_object_size(resume_token)
+    ccall((:aws_s3_meta_request_resume_token_object_size, libaws_c_s3), UInt64, (Ptr{aws_s3_meta_request_resume_token},), resume_token)
+end
+
+"""
+    aws_s3_meta_request_resume_token_object_range_start(resume_token)
+
+Documentation not found.
+### Prototype
+```c
+uint64_t aws_s3_meta_request_resume_token_object_range_start( const struct aws_s3_meta_request_resume_token *resume_token);
+```
+"""
+function aws_s3_meta_request_resume_token_object_range_start(resume_token)
+    ccall((:aws_s3_meta_request_resume_token_object_range_start, libaws_c_s3), UInt64, (Ptr{aws_s3_meta_request_resume_token},), resume_token)
+end
+
+"""
+    aws_s3_meta_request_resume_token_object_range_end(resume_token)
+
+Documentation not found.
+### Prototype
+```c
+uint64_t aws_s3_meta_request_resume_token_object_range_end(const struct aws_s3_meta_request_resume_token *resume_token);
+```
+"""
+function aws_s3_meta_request_resume_token_object_range_end(resume_token)
+    ccall((:aws_s3_meta_request_resume_token_object_range_end, libaws_c_s3), UInt64, (Ptr{aws_s3_meta_request_resume_token},), resume_token)
+end
+
+"""
+    aws_s3_meta_request_resume_token_continuous_downloaded_bytes(resume_token)
+
+Documentation not found.
+### Prototype
+```c
+uint64_t aws_s3_meta_request_resume_token_continuous_downloaded_bytes( const struct aws_s3_meta_request_resume_token *resume_token);
+```
+"""
+function aws_s3_meta_request_resume_token_continuous_downloaded_bytes(resume_token)
+    ccall((:aws_s3_meta_request_resume_token_continuous_downloaded_bytes, libaws_c_s3), UInt64, (Ptr{aws_s3_meta_request_resume_token},), resume_token)
+end
+
+"""
+    aws_s3_meta_request_resume_token_total_downloaded_bytes(resume_token)
+
+Documentation not found.
+### Prototype
+```c
+uint64_t aws_s3_meta_request_resume_token_total_downloaded_bytes( const struct aws_s3_meta_request_resume_token *resume_token);
+```
+"""
+function aws_s3_meta_request_resume_token_total_downloaded_bytes(resume_token)
+    ccall((:aws_s3_meta_request_resume_token_total_downloaded_bytes, libaws_c_s3), UInt64, (Ptr{aws_s3_meta_request_resume_token},), resume_token)
+end
+
+"""
+    aws_s3_meta_request_resume_token_file_last_modified_epoch_ns(resume_token)
+
+Documentation not found.
+### Prototype
+```c
+uint64_t aws_s3_meta_request_resume_token_file_last_modified_epoch_ns( const struct aws_s3_meta_request_resume_token *resume_token);
+```
+"""
+function aws_s3_meta_request_resume_token_file_last_modified_epoch_ns(resume_token)
+    ccall((:aws_s3_meta_request_resume_token_file_last_modified_epoch_ns, libaws_c_s3), UInt64, (Ptr{aws_s3_meta_request_resume_token},), resume_token)
 end
 
 """
