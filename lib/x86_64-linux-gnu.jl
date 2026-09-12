@@ -70,6 +70,7 @@ Documentation not found.
     AWS_ERROR_S3_RECV_FILE_NOT_FOUND = 14368
     AWS_ERROR_S3_REQUEST_TIMEOUT = 14369
     AWS_ERROR_S3_BUFFER_ALLOCATION_FAILED = 14370
+    AWS_ERROR_S3_PART_SIZE_EXCEEDS_MEMORY_LIMIT = 14371
     AWS_ERROR_S3_INTERNAL_PART_SIZE_MISMATCH_RETRYING_WITH_RANGE = 14365
     AWS_ERROR_S3_END_RANGE = 15359
 end
@@ -908,36 +909,61 @@ end
 Documentation not found.
 """
 struct aws_s3_client_config
-    max_active_connections_override::UInt32
-    region::aws_byte_cursor
-    client_bootstrap::Ptr{aws_client_bootstrap}
-    tls_mode::aws_s3_meta_request_tls_mode
-    tls_connection_options::Ptr{aws_tls_connection_options}
-    fio_opts::Ptr{aws_s3_file_io_options}
-    signing_config::Ptr{aws_signing_config_aws}
-    part_size::UInt64
-    max_part_size::UInt64
-    multipart_upload_threshold::UInt64
-    throughput_target_gbps::Cdouble
-    memory_limit_in_bytes::UInt64
-    retry_strategy::Ptr{aws_retry_strategy}
-    compute_content_md5::aws_s3_meta_request_compute_content_md5
-    shutdown_callback::Ptr{aws_s3_client_shutdown_complete_callback_fn}
-    shutdown_callback_user_data::Ptr{Cvoid}
-    proxy_options::Ptr{aws_http_proxy_options}
-    proxy_ev_settings::Ptr{proxy_env_var_settings}
-    connect_timeout_ms::UInt32
-    tcp_keep_alive_options::Ptr{aws_s3_tcp_keep_alive_options}
-    monitoring_options::Ptr{aws_http_connection_monitoring_options}
-    enable_read_backpressure::Bool
-    initial_read_window::Csize_t
-    enable_s3express::Bool
-    s3express_provider_override_factory::Ptr{aws_s3express_provider_factory_fn}
-    factory_user_data::Ptr{Cvoid}
-    network_interface_names_array::Ptr{aws_byte_cursor}
-    num_network_interface_names::Csize_t
-    buffer_pool_factory_fn::Ptr{aws_s3_buffer_pool_factory_fn}
-    buffer_pool_user_data::Ptr{Cvoid}
+    data::NTuple{280, UInt8}
+end
+
+function Base.getproperty(x::Ptr{aws_s3_client_config}, f::Symbol)
+    f === :max_active_connections_override && return Ptr{UInt32}(x + 0)
+    f === :region && return Ptr{aws_byte_cursor}(x + 8)
+    f === :client_bootstrap && return Ptr{Ptr{aws_client_bootstrap}}(x + 24)
+    f === :tls_mode && return Ptr{aws_s3_meta_request_tls_mode}(x + 32)
+    f === :tls_connection_options && return Ptr{Ptr{aws_tls_connection_options}}(x + 40)
+    f === :fio_opts && return Ptr{Ptr{aws_s3_file_io_options}}(x + 48)
+    f === :signing_config && return Ptr{Ptr{aws_signing_config_aws}}(x + 56)
+    f === :part_size && return Ptr{UInt64}(x + 64)
+    f === :max_part_size && return Ptr{UInt64}(x + 72)
+    f === :multipart_upload_threshold && return Ptr{UInt64}(x + 80)
+    f === :throughput_target_gbps && return Ptr{Cdouble}(x + 88)
+    f === :memory_limit_in_bytes && return Ptr{UInt64}(x + 96)
+    f === :retry_strategy && return Ptr{Ptr{aws_retry_strategy}}(x + 104)
+    f === :retry_config && return Ptr{__JL_Ctag_93}(x + 112)
+    f === :compute_content_md5 && return Ptr{aws_s3_meta_request_compute_content_md5}(x + 144)
+    f === :shutdown_callback && return Ptr{Ptr{aws_s3_client_shutdown_complete_callback_fn}}(x + 152)
+    f === :shutdown_callback_user_data && return Ptr{Ptr{Cvoid}}(x + 160)
+    f === :proxy_options && return Ptr{Ptr{aws_http_proxy_options}}(x + 168)
+    f === :proxy_ev_settings && return Ptr{Ptr{proxy_env_var_settings}}(x + 176)
+    f === :connect_timeout_ms && return Ptr{UInt32}(x + 184)
+    f === :tcp_keep_alive_options && return Ptr{Ptr{aws_s3_tcp_keep_alive_options}}(x + 192)
+    f === :monitoring_options && return Ptr{Ptr{aws_http_connection_monitoring_options}}(x + 200)
+    f === :enable_read_backpressure && return Ptr{Bool}(x + 208)
+    f === :initial_read_window && return Ptr{Csize_t}(x + 216)
+    f === :enable_s3express && return Ptr{Bool}(x + 224)
+    f === :s3express_provider_override_factory && return Ptr{Ptr{aws_s3express_provider_factory_fn}}(x + 232)
+    f === :factory_user_data && return Ptr{Ptr{Cvoid}}(x + 240)
+    f === :network_interface_names_array && return Ptr{Ptr{aws_byte_cursor}}(x + 248)
+    f === :num_network_interface_names && return Ptr{Csize_t}(x + 256)
+    f === :buffer_pool_factory_fn && return Ptr{Ptr{aws_s3_buffer_pool_factory_fn}}(x + 264)
+    f === :buffer_pool_user_data && return Ptr{Ptr{Cvoid}}(x + 272)
+    return getfield(x, f)
+end
+
+function Base.getproperty(x::aws_s3_client_config, f::Symbol)
+    r = Ref{aws_s3_client_config}(x)
+    ptr = Base.unsafe_convert(Ptr{aws_s3_client_config}, r)
+    fptr = getproperty(ptr, f)
+    GC.@preserve r unsafe_load(fptr)
+end
+
+function Base.setproperty!(x::Ptr{aws_s3_client_config}, f::Symbol, v)
+    unsafe_store!(getproperty(x, f), v)
+end
+
+function Base.propertynames(x::aws_s3_client_config, private::Bool = false)
+    (:max_active_connections_override, :region, :client_bootstrap, :tls_mode, :tls_connection_options, :fio_opts, :signing_config, :part_size, :max_part_size, :multipart_upload_threshold, :throughput_target_gbps, :memory_limit_in_bytes, :retry_strategy, :retry_config, :compute_content_md5, :shutdown_callback, :shutdown_callback_user_data, :proxy_options, :proxy_ev_settings, :connect_timeout_ms, :tcp_keep_alive_options, :monitoring_options, :enable_read_backpressure, :initial_read_window, :enable_s3express, :s3express_provider_override_factory, :factory_user_data, :network_interface_names_array, :num_network_interface_names, :buffer_pool_factory_fn, :buffer_pool_user_data, if private
+            fieldnames(typeof(x))
+        else
+            ()
+        end...)
 end
 
 """
