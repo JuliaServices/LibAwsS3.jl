@@ -156,6 +156,26 @@ function aws_s3_get_current_platform_ec2_intance_type(cached_only)
 end
 
 """
+    aws_s3_default_memory_limit_for_throughput(throughput_target_gbps)
+
+Returns the default memory pool size that aws-c-s3 would use for a given throughput target. Matches the tier-based sizing [`aws_s3_client_new`](@ref) applies when the caller does not set an explicit memory\\_limit\\_in\\_bytes.
+
+If throughput\\_target\\_gbps > 0, the tier table is applied directly.
+
+If throughput\\_target\\_gbps == 0, aws-c-s3 attempts to auto-detect the throughput from the current EC2 environment via the per-family NIC bandwidth table. If auto-detection succeeds and the detected throughput is below the conservative right-sizing threshold (10 Gbps), the tier table is applied to the detected value. Otherwise the 2 GiB default is returned.
+
+Bindings can call this to size a language-side memory pool (e.g. a Java DirectByteBuffer pool) to match the native default without duplicating the tier table or the auto-detection logic.
+
+### Prototype
+```c
+size_t aws_s3_default_memory_limit_for_throughput(double throughput_target_gbps);
+```
+"""
+function aws_s3_default_memory_limit_for_throughput(throughput_target_gbps)
+    ccall((:aws_s3_default_memory_limit_for_throughput, libaws_c_s3), Csize_t, (Cdouble,), throughput_target_gbps)
+end
+
+"""
     aws_s3_get_platforms_with_recommended_config()
 
 Documentation not found.
@@ -904,6 +924,43 @@ struct aws_s3_tcp_keep_alive_options
 end
 
 """
+    __JL_Ctag_93
+
+Optional. Configuration for the S3 client's built-in retry strategy. All fields default to 0 (from zero-initialization), which means "use S3 client defaults."
+
+Ignored if retry\\_strategy is non-NULL. The provided strategy takes full precedence. We use a separate retry\\_config because the retry\\_strategy is unchangeable once it is provided fully constructed. We do not construct it using provided settings at the binding layer because we would have to do it per binding and would then need to explicitly know aws-c-s3 defaults at each binding instead of only having it set once here.
+
+S3 client defaults (when all fields are 0): max\\_retries = 5, backoff\\_scale\\_factor\\_ms = 500, max\\_backoff\\_secs = 20, jitter\\_mode = FULL, initial\\_bucket\\_capacity = 500
+"""
+struct __JL_Ctag_93
+    max_retries::Csize_t
+    backoff_scale_factor_ms::UInt32
+    max_backoff_secs::UInt32
+    jitter_mode::aws_exponential_backoff_jitter_mode
+    initial_bucket_capacity::Csize_t
+end
+function Base.getproperty(x::Ptr{__JL_Ctag_93}, f::Symbol)
+    f === :max_retries && return Ptr{Csize_t}(x + 0)
+    f === :backoff_scale_factor_ms && return Ptr{UInt32}(x + 8)
+    f === :max_backoff_secs && return Ptr{UInt32}(x + 12)
+    f === :jitter_mode && return Ptr{aws_exponential_backoff_jitter_mode}(x + 16)
+    f === :initial_bucket_capacity && return Ptr{Csize_t}(x + 24)
+    return getfield(x, f)
+end
+
+function Base.getproperty(x::__JL_Ctag_93, f::Symbol)
+    r = Ref{__JL_Ctag_93}(x)
+    ptr = Base.unsafe_convert(Ptr{__JL_Ctag_93}, r)
+    fptr = getproperty(ptr, f)
+    GC.@preserve r unsafe_load(fptr)
+end
+
+function Base.setproperty!(x::Ptr{__JL_Ctag_93}, f::Symbol, v)
+    unsafe_store!(getproperty(x, f), v)
+end
+
+
+"""
     aws_s3_client_config
 
 Documentation not found.
@@ -1081,6 +1138,19 @@ struct aws_s3_client *aws_s3_client_release(struct aws_s3_client *client);
 """
 function aws_s3_client_release(client)
     ccall((:aws_s3_client_release, libaws_c_s3), Ptr{aws_s3_client}, (Ptr{aws_s3_client},), client)
+end
+
+"""
+    aws_s3_client_get_max_active_connections(client, meta_request)
+
+Documentation not found.
+### Prototype
+```c
+uint32_t aws_s3_client_get_max_active_connections( struct aws_s3_client *client, struct aws_s3_meta_request *meta_request);
+```
+"""
+function aws_s3_client_get_max_active_connections(client, meta_request)
+    ccall((:aws_s3_client_get_max_active_connections, libaws_c_s3), UInt32, (Ptr{aws_s3_client}, Ptr{aws_s3_meta_request}), client, meta_request)
 end
 
 """
@@ -1879,6 +1949,34 @@ void aws_s3_request_metrics_get_host_address( const struct aws_s3_request_metric
 """
 function aws_s3_request_metrics_get_host_address(metrics, out_host_address)
     ccall((:aws_s3_request_metrics_get_host_address, libaws_c_s3), Cvoid, (Ptr{aws_s3_request_metrics}, Ptr{Ptr{aws_string}}), metrics, out_host_address)
+end
+
+"""
+    aws_s3_request_metrics_get_is_https(metrics)
+
+Get whether the request was made over TLS (https) or plaintext (http). This will always be available.
+
+### Prototype
+```c
+bool aws_s3_request_metrics_get_is_https(const struct aws_s3_request_metrics *metrics);
+```
+"""
+function aws_s3_request_metrics_get_is_https(metrics)
+    ccall((:aws_s3_request_metrics_get_is_https, libaws_c_s3), Bool, (Ptr{aws_s3_request_metrics},), metrics)
+end
+
+"""
+    aws_s3_request_metrics_get_http_manager_metrics(metrics, out_metrics)
+
+Get a snapshot of the endpoint's HTTP connection manager metrics, taken right before this request asks for a connection. This reflects the manager's overall state at that instant, not just this request. This will always be available.
+
+### Prototype
+```c
+void aws_s3_request_metrics_get_http_manager_metrics( const struct aws_s3_request_metrics *metrics, struct aws_http_manager_metrics *out_metrics);
+```
+"""
+function aws_s3_request_metrics_get_http_manager_metrics(metrics, out_metrics)
+    ccall((:aws_s3_request_metrics_get_http_manager_metrics, libaws_c_s3), Cvoid, (Ptr{aws_s3_request_metrics}, Ptr{Cvoid}), metrics, out_metrics)
 end
 
 """
