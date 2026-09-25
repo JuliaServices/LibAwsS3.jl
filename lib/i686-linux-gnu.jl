@@ -966,7 +966,7 @@ end
 Documentation not found.
 """
 struct aws_s3_client_config
-    data::NTuple{164, UInt8}
+    data::NTuple{172, UInt8}
 end
 
 function Base.getproperty(x::Ptr{aws_s3_client_config}, f::Symbol)
@@ -1001,6 +1001,8 @@ function Base.getproperty(x::Ptr{aws_s3_client_config}, f::Symbol)
     f === :num_network_interface_names && return Ptr{Csize_t}(x + 152)
     f === :buffer_pool_factory_fn && return Ptr{Ptr{aws_s3_buffer_pool_factory_fn}}(x + 156)
     f === :buffer_pool_user_data && return Ptr{Ptr{Cvoid}}(x + 160)
+    f === :out_of_order_delivery && return Ptr{aws_tribool}(x + 164)
+    f === :num_file_io_threads && return Ptr{UInt16}(x + 168)
     return getfield(x, f)
 end
 
@@ -1016,7 +1018,7 @@ function Base.setproperty!(x::Ptr{aws_s3_client_config}, f::Symbol, v)
 end
 
 function Base.propertynames(x::aws_s3_client_config, private::Bool = false)
-    (:max_active_connections_override, :region, :client_bootstrap, :tls_mode, :tls_connection_options, :fio_opts, :signing_config, :part_size, :max_part_size, :multipart_upload_threshold, :throughput_target_gbps, :memory_limit_in_bytes, :retry_strategy, :retry_config, :compute_content_md5, :shutdown_callback, :shutdown_callback_user_data, :proxy_options, :proxy_ev_settings, :connect_timeout_ms, :tcp_keep_alive_options, :monitoring_options, :enable_read_backpressure, :initial_read_window, :enable_s3express, :s3express_provider_override_factory, :factory_user_data, :network_interface_names_array, :num_network_interface_names, :buffer_pool_factory_fn, :buffer_pool_user_data, if private
+    (:max_active_connections_override, :region, :client_bootstrap, :tls_mode, :tls_connection_options, :fio_opts, :signing_config, :part_size, :max_part_size, :multipart_upload_threshold, :throughput_target_gbps, :memory_limit_in_bytes, :retry_strategy, :retry_config, :compute_content_md5, :shutdown_callback, :shutdown_callback_user_data, :proxy_options, :proxy_ev_settings, :connect_timeout_ms, :tcp_keep_alive_options, :monitoring_options, :enable_read_backpressure, :initial_read_window, :enable_s3express, :s3express_provider_override_factory, :factory_user_data, :network_interface_names_array, :num_network_interface_names, :buffer_pool_factory_fn, :buffer_pool_user_data, :out_of_order_delivery, :num_file_io_threads, if private
             fieldnames(typeof(x))
         else
             ()
@@ -1058,6 +1060,7 @@ struct aws_s3_meta_request_options
     recv_file_option::aws_s3_recv_file_options
     recv_file_position::UInt64
     recv_file_delete_on_failure::Bool
+    out_of_order_delivery::aws_tribool
     send_filepath::aws_byte_cursor
     fio_opts::Ptr{aws_s3_file_io_options}
     send_async_stream::Ptr{aws_async_input_stream}
