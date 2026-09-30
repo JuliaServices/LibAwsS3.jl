@@ -832,6 +832,21 @@ Documentation not found.
 end
 
 """
+    aws_s3_checksum_validation_mode
+
+Which checksums a download is validated against.
+
+A download is made of one or more part responses, each of which may carry a checksum of its own body, and the whole download may also be covered by a single checksum (the object's, or one the caller supplies). These modes pick which of the two the client checks.
+
+Only applies to AWS\\_S3\\_META\\_REQUEST\\_TYPE\\_GET\\_OBJECT; ignored by other meta request types.
+"""
+@cenum aws_s3_checksum_validation_mode::UInt32 begin
+    AWS_SCVM_DEFAULT = 0
+    AWS_SCVM_REQUEST_ONLY = 1
+    AWS_SCVM_FULL_OBJECT = 2
+end
+
+"""
     aws_s3_recv_file_options
 
 Documentation not found.
@@ -1037,6 +1052,9 @@ struct aws_s3_checksum_config
     user_data::Ptr{Cvoid}
     validate_response_checksum::Bool
     validate_checksum_algorithms::Ptr{aws_array_list}
+    expected_checksum::aws_byte_cursor
+    expected_checksum_algorithm::aws_s3_checksum_algorithm
+    response_checksum_validation_mode::aws_s3_checksum_validation_mode
 end
 
 """
